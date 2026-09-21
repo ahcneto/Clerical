@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="RelParticipantesChecklist.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+  <xsql:include-request-params/>
+
+  
+  <xsql:query connection="cad" rowset-element="Encontros" row-element="Encontro">
+        SELECT * 
+        FROM Encontros
+		WHERE IdEncontro = '{@IdEncontro}';
+    </xsql:query>
+	
+    <!-- Listar participantes do Encontro -->
+    <xsql:query connection="cad">
+        SELECT pe.IdEncontro,p.IdPessoa, p.Nome, e.flgCustom1 as usaCustom1,e.NmCustom1, pe.flgCustom1,pa.Descricao as Paroquia,pa.Bairro, pa.Cidade, pa.Regiao, TIMESTAMPDIFF(YEAR, p.DtNascimento , CURDATE()) AS idade
+        FROM participanteEncontro pe
+        JOIN pessoas p ON pe.IdPessoa = p.IdPessoa
+		JOIN Encontros e ON e.IdEncontro = pe.IdEncontro
+		LEFT JOIN paroquia pa ON p.IdParoquia = pa.IdParoquia
+        WHERE pe.IdEncontro = '{@IdEncontro}'
+		and p.status = 1	
+		order by pa.Regiao, pa.Cidade,pa.Bairro,pa.Descricao,p.Nome;
+    </xsql:query>
+
+ 
+  
+
+</SQL>
+

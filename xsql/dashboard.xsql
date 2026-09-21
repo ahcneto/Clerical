@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+  <xsql:include-request-params/>
+  
+  
+ <!-- Filtro por Classe e Data -->
+    <xsql:query connection="cad">
+       	SELECT pes.Nome,
+(CASE
+    WHEN pes.Classe = 1 THEN 'DIACONO'
+    WHEN pes.Classe = 2 THEN 'CANDIDATO'
+    WHEN pes.Classe = 3 THEN 'VOCACIONADO'
+END)as tipo,
+TIMESTAMPDIFF(YEAR, pes.DtNascimento, CURDATE()) as idade,
+ IFNULL(DATE_FORMAT(pes.DtOrdenacao, '%Y'), pes.Turma) as data_ref,
+ REPLACE(par.Descricao,'"','') as paroquia,
+ par.IdRegiao as regiao
+FROM pessoas pes
+LEFT JOIN paroquia par ON pes.IdParoquia = par.IdParoquia
+WHERE pes.status = 1
+ORDER BY par.IdRegiao, par.Descricao, pes.Nome
+        
+    </xsql:query>
+
+</SQL>

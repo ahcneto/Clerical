@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="RelAniversarios.xsl"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+  <xsql:include-request-params/>
+   
+ 
+<xsql:query connection="cad" rowset-element="Meses" row-element="Mes">
+    SELECT distinct MONTH(DtNascimento) as Mes FROM pessoas
+  </xsql:query>
+  
+    <!-- Filtro por Classe e Data -->
+    <xsql:query connection="cad">
+        select sp.DescClasse , sp.Nome , '' as Esposa ,sp.DtNascimento as Data, 'Nascimento' as Tipo, sp.DiaNascimento as Dia , TIMESTAMPDIFF(YEAR, STR_TO_DATE(sp.DtNascimento, '%d/%m/%Y'), CURDATE()) as Idade
+from sqlPessoas sp 
+where (Classe = {@classe} OR {@classe} = 0)
+and (sp.MesNascimento = {@Mes} OR {@Mes} = 0 )
+union all
+select sp.DescClasse , sp.Nome ,sp.NomeEsposa as Esposa ,sp.DtNascEsposa  as Data, 'NascEsposa' as tipo, sp.DiaNascEsposa as dia, TIMESTAMPDIFF(YEAR, STR_TO_DATE(sp.DtNascEsposa, '%d/%m/%Y'), CURDATE()) as idade
+from sqlPessoas sp 
+where (Classe = {@classe} OR {@classe} = 0)
+and (sp.MesNascEsposa = {@Mes} OR {@Mes} = 0 )
+union all
+select sp.DescClasse , sp.Nome ,sp.NomeEsposa as Esposa ,sp.DtCasamento  as Data, 'Casamento' as tipo, sp.DiaCasamento  as dia, TIMESTAMPDIFF(YEAR, STR_TO_DATE(sp.DtCasamento, '%d/%m/%Y'), CURDATE()) as idade
+from sqlPessoas sp 
+where (Classe = {@classe} OR {@classe} = 0)
+and (sp.MesCasamento = {@Mes} OR {@Mes} = 0 )
+order by dia;
+    </xsql:query>
+
+   
+
+</SQL>

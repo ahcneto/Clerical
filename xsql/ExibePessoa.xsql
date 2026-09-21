@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="ExibePessoa.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    
+	 <xsql:include-request-params/>
+   
+	<xsql:query connection="cad">
+	SELECT p.IdPessoa,p.Nome,p.DtNascimento,p.Fone1,p.Fone2,p.Email ,p.Endereco, p.Complemento,p.Profissao,p.DtOrdenacao ,  r.Descricao as Paroquia,r.Cidade, r.Bairro, r.Regiao,   (case p.Classe when 1 then 'Diacono' when 2 then 'Candidato' when 3 then 'Vocacionado' else 'Outro' end) as Etapa,  TIMESTAMPDIFF(YEAR, p.DtNascimento , CURDATE()) AS Idade
+    , p.NomeEsposa ,p.DtNascEsposa ,p.DtCasamento, p.Pastoral, p.Status,p.Obs   	
+    FROM pessoas p left join paroquia r on p.IdParoquia = r.IdParoquia
+        WHERE IdPessoa = {@IdPessoa}
+	</xsql:query>
+	
+	<xsql:query connection="cad" rowset-element="ENCONTROS" row-element="ENCONTRO">
+	SELECT pe.IdPessoa, e.IdEncontro, e.Descricao ,e.Local, e.DtEncontro , pe.flgPresenca , pe.flgEsposaPres , pe.Justificativa ,
+(CASE  pe.flgPresenca WHEN 1 THEN 'Presente' ELSE 'Faltou' END) AS Presenca	,ifnull(pe.distancia,0) as distancia
+	from Encontros e  join participanteEncontro pe on pe.IdEncontro = e.IdEncontro 
+	where pe.IdPessoa = {@IdPessoa}
+	order by e.DtEncontro 
+	</xsql:query>
+   
+</SQL> 	

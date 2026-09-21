@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href=""?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+  <xsql:include-request-params/>
+
+<xsql:if-param name="IdPessoa" not-equals="0">
+
+ <xsql:dml  >
+            update participanteEncontro set flgPresenca={@flgPresenca},flgEsposaPres={@flgEsposaPres}, Justificativa = '{@Justificativa}'  , data_atualizacao=NOW()
+			where IdPessoa = '{@IdPessoa}' AND IdEncontro = '{@IdEncontro}'
+ </xsql:dml>
+		
+		
+  </xsql:if-param>  
+
+  <xsql:query connection="cad" rowset-element="Encontros" row-element="Encontro">
+        SELECT * 
+        FROM Encontros
+        WHERE IdEncontro = '{@IdEncontro}';
+    </xsql:query>
+	
+    <!-- Listar participantes do Encontro -->
+    <xsql:query connection="cad">
+        SELECT pe.IdEncontro,p.IdPessoa, p.Nome, pe.flgPresenca ,pe.Justificativa,pe.flgEsposaPres
+        FROM participanteEncontro pe
+        JOIN pessoas p ON pe.IdPessoa = p.IdPessoa
+        WHERE pe.IdEncontro = '{@IdEncontro}'
+		order by p.Nome;
+    </xsql:query>
+
+ 
+  
+
+</SQL>

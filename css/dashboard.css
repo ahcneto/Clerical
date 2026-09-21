@@ -1,0 +1,239 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #f5f7fb;
+    font-family: Arial, sans-serif;
+    color: #2c3e50;
+}
+
+
+
+/* HEADER */
+.dashboard-header {
+    background: linear-gradient(90deg, #1d4f91, #2c73d2);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.dashboard-header p {
+    margin: 2px 0 0 0;
+	font-size: 14px;
+    opacity: 0.9;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.header-left p {
+    margin: 4px 0 0 0;
+    opacity: 0.9;
+}
+
+.header-right {
+    text-align: right;
+}
+
+/* KPI */
+.kpi-card {
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    min-height: 75px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.kpi-card h3 {
+    margin: 0;
+    font-size: 22px;
+    color: #1d4f91;
+    font-weight: bold;
+}
+
+.kpi-card span {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* FILTROS */
+.filters-panel {
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* PAINÉIS */
+.panel-card {
+    background: white;
+    padding: 5px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.panel-card h4 {
+    margin-bottom: 20px;
+    color: #1d4f91;
+    font-weight: bold;
+}
+
+/* MAPA */
+.map-container {
+    width: 100%;
+}
+
+#mapaReal {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* TABELAS GERAIS */
+table {
+    font-size: 13px;
+    width: 100%;
+}
+
+thead {
+    background: #1d4f91;
+    color: white;
+}
+
+th {
+    padding: 12px !important;
+}
+
+table tbody tr {
+    cursor: pointer;
+}
+
+table tbody tr:hover {
+    background: #eef5ff;
+}
+
+/* COLUNA DIREITA */
+.coluna-direita {
+    height: 1100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* CARDS FIXOS */
+.card-paroquias {
+    height: 680px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card-pessoas {
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* SCROLL INTERNO */
+.table-scroll-paroquias {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+}
+
+.table-scroll-pessoas {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+}
+
+/* TABELAS */
+.table-scroll-paroquias table,
+.table-scroll-pessoas table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* HEADER FIXO */
+.table-scroll-paroquias thead th,
+.table-scroll-pessoas thead th {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #1d4f91;
+    color: white;
+}
+
+/* RESPONSIVO */
+@media (max-width: 992px) {
+    .dashboard-header h1 {
+        font-size: 24px;
+    }
+
+    .kpi-card h3 {
+        font-size: 26px;
+    }
+}
+
+.dashboard-main {
+    height: 100vh;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+.filtro-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filtro-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.kpi-selected {
+    background: #1d4f91;
+    color: white;
+}
+
+.kpi-selected h3,
+.kpi-selected span {
+    color: white;
+}
+
+
+
+.header-status {
+    display: inline-block;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}

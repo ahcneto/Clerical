@@ -1,0 +1,107 @@
+<div id="memberModal" class="custom-modal-overlay">
+
+    <div class="custom-modal">
+
+        <div class="modal-header-custom">
+            <h3 id="modalTitle">Novo Membro</h3>
+            <button onclick="closeMemberModal()" class="close-btn">×</button>
+        </div>
+
+        <div class="modal-body-custom">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label>Nome Completo *</label>
+                    <input id="nome" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>E-mail</label>
+                    <input id="email" type="email" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Telefone</label>
+                    <input id="telefone" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Grupo *</label>
+                    <select id="grupo" class="form-select">
+                        <option>Diácono</option>
+                        <option>Candidato</option>
+                        <option>Vocacionado</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Paróquia</label>
+                    <input id="paroquia" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Endereço</label>
+                    <input id="endereco" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Data Nascimento</label>
+                    <input id="nascimento" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Data Casamento</label>
+                    <input id="casamento" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Data Ordenação</label>
+                    <input id="ordenacao" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Situação</label>
+                    <select id="situacao" class="form-select">
+                        <option>Ativo</option>
+                        <option>Inativo</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label>
+                        <input type="checkbox" id="financeiro">
+                        Responsável Financeiro
+                    </label>
+                </div>
+
+                <hr class="mt-4">
+
+                <h5>Dados da Esposa</h5>
+
+                <div class="col-md-6">
+                    <label>Nome da Esposa</label>
+                    <input id="nomeEsposa" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Nascimento da Esposa</label>
+                    <input id="nascimentoEsposa" type="date" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Telefone da Esposa</label>
+                    <input id="telefoneEsposa" type="text" class="form-control">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-light" onclick="closeMemberModal()">Cancelar</button>
+            <button class="btn btn-orange" onclick="saveMember()">Salvar</button>
+        </div>
+
+    </div>
+</div>

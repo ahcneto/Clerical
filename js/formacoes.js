@@ -1,0 +1,8 @@
+const formacoesEsc=valor=>{const e=document.createElement("div");e.textContent=valor??"";return e.innerHTML;};
+async function carregarProgramasFormacao(){
+ const r=await fetch(`formacao_api.jsp?acao=programas&pessoa=${encodeURIComponent(window.formacoesPessoaId)}`,{cache:"no-store"}),d=await r.json();
+ if(!r.ok||!d.ok)throw new Error(d.mensagem||"Erro ao carregar formações.");
+ formacoesSubtitulo.textContent=`Programas formativos de ${d.nome}`;
+ programasFormacao.innerHTML=d.programas.map(p=>`<div class="col-lg-6"><article class="program-card ${p.status==="INATIVO"?"inactive":""}" onclick="location.href='formacao.jsp?programa=${p.id}&pessoa=${d.pessoa}'"><div class="d-flex justify-content-between gap-3"><div><span class="badge ${p.status==="ATIVO"?"text-bg-success":"text-bg-secondary"}">${p.status==="ATIVO"?"Ativo":"Inativo"}</span><h3 class="h5 fw-bold mt-3 mb-1">${formacoesEsc(p.nome)}</h3><div class="program-meta">${p.dataInicio?`Início: ${formacoesEsc(p.dataInicio)}`:"Data de início não informada"}</div></div><div class="text-end"><div class="program-percent">${p.percentual}%</div><small class="text-muted">concluído</small></div></div><div class="program-progress my-3"><div style="width:${p.percentual}%"></div></div><div class="d-flex justify-content-between program-meta"><span>${p.concluidas}/${p.obrigatorias} obrigatórias</span><span>${p.emAndamento} em andamento</span></div></article></div>`).join("")||'<div class="col-12"><div class="profile-card text-center text-muted py-5"><i class="bi bi-journal-x fs-1 d-block mb-2"></i>Nenhum programa formativo disponível.</div></div>';
+}
+carregarProgramasFormacao().catch(e=>programasFormacao.innerHTML=`<div class="col-12"><div class="alert alert-danger">${formacoesEsc(e.message)}</div></div>`);

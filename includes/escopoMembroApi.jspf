@@ -1,0 +1,7 @@
+<%!
+private boolean cadPodeVerMembro(java.sql.Connection c,javax.servlet.http.HttpSession sessao,int pessoa)throws java.sql.SQLException{
+ Integer usuario=(Integer)sessao.getAttribute("usuarioId"),grupo=(Integer)sessao.getAttribute("usuarioGrupoId"),regiao=(Integer)sessao.getAttribute("usuarioRegiaoId");String perfil=(String)sessao.getAttribute("usuarioPerfil");
+ if(usuario==null)return false;if(usuario.intValue()==pessoa||"ADM".equals(perfil)||"EXT".equals(perfil))return true;if(!"REP".equals(perfil)||grupo==null)return false;
+ try(java.sql.PreparedStatement p=c.prepareStatement("SELECT m.Classe,IFNULL(pa.IdRegiao,0),g.EscopoRepMembros FROM pessoas m LEFT JOIN paroquia pa ON pa.IdParoquia=m.IdParoquia JOIN grupos g ON g.IdGrupo=? WHERE m.IdPessoa=?")){p.setInt(1,grupo);p.setInt(2,pessoa);try(java.sql.ResultSet r=p.executeQuery()){if(!r.next())return false;String escopo=r.getString(3);return "TODOS".equals(escopo)||("PROPRIO".equals(escopo)&&r.getInt(1)==grupo.intValue())||("REGIAO_TODOS".equals(escopo)&&regiao!=null&&r.getInt(2)==regiao.intValue());}}
+}
+%>

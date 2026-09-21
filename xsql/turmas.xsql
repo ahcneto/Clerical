@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="listarTurmas.xsl"?>
+<xsql:query xmlns:xsql="urn:oracle-xsql" connection="cad">
+
+    
+        SELECT idTurma, Nome, Descricao, DtInicio
+        FROM turmas
+        ORDER BY idTurma
+
+
+    <!-- Inserir uma nova turma -->
+    <xsql:insert-request table="turmas" transform="inserir-turma.xsl"/>
+
+    <!-- Atualizar uma turma existente -->
+    <xsql:update-request table="turmas" transform="atualizar-turma.xsl" key-columns="idTurma"/>
+
+</xsql:query>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Confirmar Presença</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+  <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+
+<div data-role="page" id="pageConfirmacao">
+
+  <div data-role="header">
+    <h1>Registro de Presença</h1>
+  </div>
+
+  <div role="main" class="ui-content">
+
+    <form method="post" action="salvarPresenca.jsp" id="formPresenca">
+
+      <!-- Campos ocultos -->
+      <input type="hidden" name="idUsuario" id="idUsuario">
+      <input type="hidden" name="latitude" id="latitude">
+      <input type="hidden" name="longitude" id="longitude">
+
+      <h3>Confirme sua presença</h3>
+
+      <p><strong>Nome:</strong> <span id="nome"></span></p>
+      <p><strong>Data:</strong> <span id="dataEvento"></span></p>
+      <p><strong>Local:</strong> <span id="localEvento"></span></p>
+      <p><strong>Descrição:</strong> <span id="descricaoEvento"></span></p>
+
+      <div class="ui-field-contain">
+        <label for="confirmacao">Confirmar presença:</label>
+        <select name="confirmacao" id="confirmacao" data-role="slider">
+          <option value="N">Não</option>
+          <option value="S">Sim</option>
+        </select>
+      </div>
+
+      <button type="submit" class="ui-btn ui-btn-b ui-corner-all">
+        Registrar Presença
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+function getParametro(nome) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(nome);
+}
+
+$(document).on("pageinit", "#pageConfirmacao", function () {
+
+  $("#idUsuario").val(getParametro("idUsuario"));
+  $("#nome").text(getParametro("nome"));
+  $("#dataEvento").text(getParametro("dataEvento"));
+  $("#localEvento").text(getParametro("localEvento"));
+  $("#descricaoEvento").text(getParametro("descricaoEvento"));
+
+  // Captura localização
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        $("#latitude").val(pos.coords.latitude);
+        $("#longitude").val(pos.coords.longitude);
+      },
+      function () {
+        alert("Não foi possível obter sua localização.");
+      }
+    );
+  } else {
+    alert("Geolocalização não suportada.");
+  }
+
+});
+</script>
+
+</body>
+</html>

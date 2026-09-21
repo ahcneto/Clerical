@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<xsql:query connection="cad" xmlns:xsql="urn:oracle-xsql">
+    SELECT username, email FROM andrezaa_mood582.mdlhv_user
+</xsql:query>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+    <title>Tela de Pesquisa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
+    <script src="jquery/jquery.min.js"></script>
+    <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        /* Estilo para alinhar os listbox em linha */
+        .filtros-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .filtros-container .ui-select {
+            width: 30%; /* Define a largura de cada listbox */
+        }
+        /* Estilo para a tabela de resultados */
+        .resultados-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .resultados-table th, .resultados-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .resultados-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Tela de Pesquisa -->
+<div data-role="page" id="pesquisa">
+
+    <!-- Cabeçalho com botão "Voltar" -->
+    <div data-role="header">
+        <a href="#" data-rel="back" class="ui-btn ui-icon-arrow-l ui-btn-icon-left">Voltar</a>
+        <h1>Pesquisa</h1>
+    </div>
+
+    <!-- Conteúdo da Página -->
+    <div data-role="content">
+
+        <!-- Campo de pesquisa por nome -->
+        <label for="pesquisa-nome">Pesquisar por Nome:</label>
+        <input type="text" id="pesquisa-nome" placeholder="Digite o nome">
+
+        <!-- Filtros: Região, Paróquia e Turma -->
+        <div class="filtros-container">
+            <label for="regiao">Região:</label>
+            <select id="regiao" data-role="listbox">
+                <option value="">Selecione...</option>
+                <option value="1">Região 1</option>
+                <option value="2">Região 2</option>
+                <option value="3">Região 3</option>
+            </select>
+
+            <label for="paroquia">Paróquia:</label>
+            <select id="paroquia" data-role="listbox">
+                <option value="">Selecione...</option>
+                <option value="1">Paróquia 1</option>
+                <option value="2">Paróquia 2</option>
+                <option value="3">Paróquia 3</option>
+            </select>
+
+            <label for="turma">Turma:</label>
+            <select id="turma" data-role="listbox">
+                <option value="">Selecione...</option>
+                <option value="1">Turma 1</option>
+                <option value="2">Turma 2</option>
+                <option value="3">Turma 3</option>
+            </select>
+        </div>
+
+        <!-- Tabela de Resultados -->
+        <table class="resultados-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Região</th>
+                    <th>Paróquia</th>
+                    <th>Turma</th>
+                    <th>Idade</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>João Silva</td>
+                    <td>Região 1</td>
+                    <td>Paróquia 1</td>
+                    <td>Turma 1</td>
+                    <td>25</td>
+                    <td>Ativo</td>
+                </tr>
+                <tr>
+                    <td>Maria Oliveira</td>
+                    <td>Região 2</td>
+                    <td>Paróquia 2</td>
+                    <td>Turma 2</td>
+                    <td>30</td>
+                    <td>Inativo</td>
+                </tr>
+                <tr>
+                    <td>Pedro Souza</td>
+                    <td>Região 3</td>
+                    <td>Paróquia 3</td>
+                    <td>Turma 3</td>
+                    <td>22</td>
+                    <td>Ativo</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Rodapé (opcional) -->
+    <div data-role="footer">
+        <h4>&copy; 2023 Sistema de Pesquisa</h4>
+    </div>
+</div>
+
+</body>
+</html>

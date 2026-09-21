@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="UTF-8">
+    <title>Página Inicial</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
+    <script src="jquery/jquery.min.js"></script>
+    <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        .ui-header .ui-title img {
+            height: 40px;
+            vertical-align: middle;
+        }
+        .ui-content {
+            text-align: center;
+        }
+        .ui-footer {
+            text-align: center;
+            padding: 10px;
+        }
+        .aniversariantes {
+            margin: 20px auto;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Página Inicial -->
+<div data-role="page" id="home">
+
+    <!-- Barra de Título com Logo -->
+    <div data-role="header" data-position="fixed">
+	    	<h1>CLERICAL - Sistema de Cadastro do Clero</h1>
+    </div>
+
+    <!-- Conteúdo da Página -->
+    <div data-role="content" class="ui-content">
+	
+	 <p><img src="img/logo_cad.jpg" alt="Logo" style="width: 200px; height: auto;"> </p>
+	 
+	<div class="ui-grid-a">
+		<div class="ui-block-a">
+		
+		   <!-- Quadro de Aniversariantes da Semana -->
+        <div class="aniversariantes">
+            <h3>Aniversariantes de Hoje</h3>
+            <ul>
+                <li>João</li>
+                <li>Maria</li>
+                <li>Pedro</li>
+            </ul>
+        </div>
+		
+		</div>
+		<div class="ui-block-b">
+		
+		  <!-- Quadro de Aniversariantes da Semana -->
+        <div class="aniversariantes">
+            <h3>Aniversariantes da Semana</h3>
+            <ul>
+                <li>João - Segunda-feira</li>
+                <li>Maria - Quarta-feira</li>
+                <li>Pedro - Sexta-feira</li>
+            </ul>
+        </div>
+		</div>
+		
+	</div>	
+									
+	     
+    </div>
+	
+        <!-- Menu de Botões -->
+        <div data-role="controlgroup" data-type="vertical">
+            <a href="xsql/PesquisaPessoa.xsql" data-role="button">Pessoas</a>
+			<a href="xsql/encontros.xsql?cmd=listEncontros" data-role="button">Encontros</a>
+            <a href="#pagina2" data-role="button">Provisões</a>
+            <a href="xsql/paroquias.xsql" data-role="button">Paroquias e Rgiões</a>
+			<a href="relatorios.html" data-role="button">Relatórios</a>
+        </div>
+
+    <!-- Rodapé -->
+    <div data-role="footer" class="ui-footer" data-position="fixed">
+        <h4>&copy; 2025 - Comissão Arquidiocesana dos Diáconos</h4>
+    </div>
+</div>
+
+
+
+</body>
+</html>

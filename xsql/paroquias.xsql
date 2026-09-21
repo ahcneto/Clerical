@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="paroquias.xsl"?>
+<xsql:query connection="cad" xmlns:xsql="urn:oracle-xsql">
+    SELECT *
+    FROM paroquia
+</xsql:query>

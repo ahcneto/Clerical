@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+  <xsql:include-request-params/>
+  
+  
+ <!-- Filtro por Classe e Data -->
+    <xsql:query connection="cad">
+        select sp.IdPessoa as id, sp.Nome as nome, g.NomeSingular as grupo, sp.Paroquia as Paroquia,
+        IFNULL((SELECT pa.Bairro FROM paroquia pa WHERE pa.IdParoquia=sp.IdParoquia),'') as bairro,
+        sp.Regiao as regiao, sp.Fone1 as telefone, null as funcao
+		from sqlPessoas sp join grupos g on g.IdGrupo=sp.Classe and g.StatusGrupo='ATIVO' and g.GrupoOperacional=1 and g.ModuloMembros=1
+        where sp.status = '{@status}'
+		 and (
+        '{@usuarioPerfil}' in ('ADM','EXT')
+
+        or
+
+        ('{@usuarioPerfil}' = 'REP' and (
+            (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM') = 'TODOS')
+            or (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM') = 'PROPRIO' and sp.Classe='{@usuarioGrupoId}')
+            or (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM') = 'REGIAO_TODOS' and sp.IdRegiao='{@usuarioRegiaoId}')
+        ))
+    )
+    </xsql:query>
+
+</SQL>

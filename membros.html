@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membros</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4">
+    <div class="container-fluid">
+
+        <a class="navbar-brand fw-bold" href="#">
+            <i class="bi bi-bank"></i> Escola Diaconal
+        </a>
+
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Início</a></li>
+                <li class="nav-item"><a class="nav-link active" href="#"><i class="bi bi-people"></i> Membros</a></li>
+                <li class="nav-item"><a class="nav-link" href="encontros.html"><i class="bi bi-calendar-event"></i> Encontros</a></li>
+                <li class="nav-item"><a class="nav-link" href="contribuicoes.html"><i class="bi bi-cash"></i> Contribuições</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bar-chart"></i> Relatórios</a></li>
+            </ul>
+
+            <div class="user-info">
+                <span class="avatar">A</span> Aristeu Holanda
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTEÚDO -->
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Membros</h1>
+            <p class="text-muted" id="total-membros">0 cadastrados</p>
+        </div>
+
+        <button class="btn btn-orange" onclick="openMemberModal()">  <i class="bi bi-plus-lg"></i> Novo Membro
+        </button>
+    </div>
+
+    <!-- filtros -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="form-control search-box"
+                   placeholder="Buscar por nome ou paróquia...">
+        </div>
+
+        <div class="col-md-3">
+            <select id="filterGrupo" class="form-select">
+                <option value="">Todos os grupos</option>
+                <option value="Diácono">Diácono</option>
+                <option value="Candidato">Candidato</option>
+                <option value="Vocacionado">Vocacionado</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="filterStatus" class="form-select" aria-label="Filtrar por status">
+                <option value="1">Membros ativos</option>
+                <option value="0">Membros inativos</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- lista -->
+    <div id="membersContainer"></div>
+
+</div>
+
+<div id="memberModal" class="custom-modal-overlay">
+
+    <div class="custom-modal">
+
+        <div class="modal-header-custom">
+            <h3 id="modalTitle">Novo Membro</h3>
+            <button onclick="closeMemberModal()" class="close-btn">×</button>
+        </div>
+
+        <div class="modal-body-custom">
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label>Nome</label>
+                    <input id="nome" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Telefone</label>
+                    <input id="telefone" type="text" class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label>Grupo</label>
+                    <select id="grupo" class="form-select">
+                        <option>Diácono</option>
+                        <option>Candidato</option>
+                        <option>Vocacionado</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Paróquia</label>
+                    <input id="paroquia" type="text" class="form-control">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button class="btn btn-light" onclick="closeMemberModal()">Cancelar</button>
+            <button class="btn btn-orange">Salvar</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/member-modal.js"></script>
+<script src="js/members.js"></script>
+
+</body>
+</html>

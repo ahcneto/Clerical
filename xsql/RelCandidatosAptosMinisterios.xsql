@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="RelCandidatosAptosMinisterios.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    
+   
+	<xsql:query row-element = "ORDEMSACRA">
+	select IdPessoa,Nome  
+		from pessoas p 
+		where classe = 2 
+			and flgTeologia > 0 
+			and flgOrdemSacra = 0 
+			
+	</xsql:query>
+	
+	<xsql:query row-element = "LEITOR">
+	select IdPessoa,Nome  
+		from pessoas p 
+		where classe = 2 
+			and flgTeologia > 0 
+			and flgOrdemSacra = 1
+			and flgLeitor = 0
+			
+	</xsql:query>
+	
+	<xsql:query row-element = "ACOLITO">
+	select IdPessoa,Nome  
+		from pessoas p 
+		where classe = 2 
+			and flgTeologia = 1 
+			and flgOrdemSacra = 1
+			and flgLeitor = 1
+			and flgAcolito = 0
+			
+	</xsql:query>
+	
+  
+</SQL> 	

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+  <xsql:include-request-params/>
+  
+  
+ <!-- Filtro por Classe e Data -->
+    <xsql:query connection="cad">
+         select
+            IdPessoa,
+            Nome,
+            DescClasse,
+            Fone1,
+            Fone2,
+            Email,
+            Matricula,
+            tpMatricula,
+            DtNascimento,
+            Idade,
+            NomeEsposa,
+            FoneEsposa,
+            DtNascEsposa,
+            DtCasamento,
+            DtOrdenacao,
+            DtProvisao,
+			IdParoquia,
+            Paroquia,
+            IFNULL((SELECT pa.Bairro FROM paroquia pa WHERE pa.IdParoquia=sqlPessoas.IdParoquia),'') as Bairro,
+            Regiao,
+            Profissao,
+            ProfissaoEsposa,
+            Pastoral,
+            Turma,
+            BispoOrdenante
+            , IFNULL(flgTeologia, 0) as flgTeologia
+            , IFNULL(flgSeminarioLeitor, 0) as flgSeminarioLeitor
+            , IFNULL(flgSeminarioAcolito, 0) as flgSeminarioAcolito
+            , IFNULL(flgOrdemSacra, 0) as flgOrdemSacra
+            , IFNULL(flgLeitor, 0) as flgLeitor
+            , IFNULL(flgAcolito, 0) as flgAcolito
+            , Obs
+            , Transferido
+            , DioceseTransf
+        from sqlPessoas
+        where IdPessoa = '{@id}' and (
+            IdPessoa='{@usuarioId}' or '{@usuarioPerfil}' in ('ADM','EXT') or
+            ('{@usuarioPerfil}'='REP' and (
+                COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM')='TODOS' or
+                (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM')='PROPRIO' and Classe='{@usuarioGrupoId}') or
+                (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM')='REGIAO_TODOS' and IdRegiao='{@usuarioRegiaoId}')
+            ))
+        )
+    </xsql:query>
+
+</SQL>

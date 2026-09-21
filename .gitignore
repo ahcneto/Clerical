@@ -1,0 +1,41 @@
+# Configuracoes e credenciais locais
+.env
+.env.*
+!.env.example
+/META-INF/context.xml
+/WEB-INF/classes/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+# Dados pessoais e arquivos enviados
+/fotos/
+/uploads/
+/WEB-INF/documentos_membros/
+/integracao/*.xlsx
+/integracao/*.xls
+/integracao/*.csv
+# Integracoes e utilitarios com conexoes locais
+/integracao/*.ktr
+/sql/AplicarLogLogin.java
+/sql/AtualizarDistanciasPresenca.java
+/sql/BackfillInativacoes.java
+# Compilados, dependencias e arquivos temporarios
+*.class
+*.jar
+*.war
+*.log
+*.bak
+*.tmp
+*.zip
+*.7z
+/target/
+/build/
+/node_modules/
+/.agents/
+/.codex/
+/.idea/
+/.vscode/
+Thumbs.db
+.DS_Store

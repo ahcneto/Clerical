@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="RelParticipantesEncontro.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+  <xsql:include-request-params/>
+
+  
+   <xsql:if-param name="upd" equals="1">
+  <xsql:dml>
+  UPDATE Encontros SET flgEnviado = '{@registro}'
+   WHERE IdEncontro = '{@IdEncontro}';
+</xsql:dml>
+  </xsql:if-param>	 
+  
+  
+  <xsql:query connection="cad" rowset-element="Encontros" row-element="Encontro">
+        SELECT * 
+        FROM Encontros
+        WHERE IdEncontro = '{@IdEncontro}';
+    </xsql:query>
+	
+    <!-- Listar participantes do Encontro -->
+    <xsql:query connection="cad">
+        SELECT pe.IdEncontro,p.IdPessoa, p.Nome, pe.flgPresenca,pe.flgEsposaPres ,pe.Justificativa,  TIMESTAMPDIFF(YEAR, p.DtNascimento , CURDATE()) AS idade, ifnull(pe.distancia,0) as distancia
+        FROM participanteEncontro pe
+        JOIN pessoas p ON pe.IdPessoa = p.IdPessoa
+        WHERE pe.IdEncontro = '{@IdEncontro}'
+		and (('{@Presentes}' = 1 and pe.flgPresenca = 1) or ('{@Ausentes}' = 1 and pe.flgPresenca = 0) or ('{@Presentes}' = '' and '{@Ausentes}' =''))
+		order by p.Nome;
+    </xsql:query>
+
+ 
+  
+
+</SQL>
+

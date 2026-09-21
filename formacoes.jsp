@@ -1,0 +1,11 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ include file="includes/auth.jsp" %>
+<%
+String perfilFormacoes=(String)session.getAttribute("usuarioPerfil");
+Integer usuarioFormacoes=(Integer)session.getAttribute("usuarioId");
+int pessoaFormacoes=usuarioFormacoes==null?0:usuarioFormacoes;
+try{String id=request.getParameter("pessoa");if(id!=null&&("ADM".equals(perfilFormacoes)||"REP".equals(perfilFormacoes)||"EXT".equals(perfilFormacoes)))pessoaFormacoes=Integer.parseInt(id);}catch(Exception ignored){}
+%>
+<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Formações</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"><link rel="stylesheet" href="css/style.css"><style>
+.program-card{height:100%;background:#fff;border:1px solid #e8edf3;border-radius:17px;padding:22px;box-shadow:0 3px 14px rgba(15,23,42,.05);cursor:pointer;transition:.18s}.program-card:hover{transform:translateY(-2px);border-color:#c96a0a;box-shadow:0 8px 22px rgba(15,23,42,.09)}.program-card.inactive{border-left:4px solid #94a3b8}.program-progress{height:10px;border-radius:999px;background:#e9eef4;overflow:hidden}.program-progress>div{height:100%;background:linear-gradient(90deg,#c96a0a,#e99a45)}.program-meta{color:#64748b;font-size:13px}.program-percent{font-size:29px;font-weight:750}
+</style></head><body><jsp:include page="includes/header.jsp"/><main class="container py-4"><div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4"><div><h1 class="fw-bold mb-1">Formações</h1><p id="formacoesSubtitulo" class="text-muted">Programas formativos disponíveis</p></div><% if("ADM".equals(perfilFormacoes)){ %><a href="formacao-admin.jsp" class="btn btn-orange"><i class="bi bi-gear"></i> Manutenção das formações</a><% } %></div><div id="programasFormacao" class="row g-3"><div class="col-12 text-muted">Carregando programas...</div></div></main><jsp:include page="includes/footer.jsp"/><script>window.formacoesPessoaId=<%= pessoaFormacoes %>;</script><script src="js/formacoes.js?v=1"></script></body></html>

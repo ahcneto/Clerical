@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tirar Foto e Enviar</title>
+</head>
+<body>
+    <h1>Tirar Foto e Enviar</h1>
+
+    <!-- Exibe a visualização da câmera -->
+    <video id="video" width="320" height="240" autoplay></video>
+    <br>
+
+    <!-- Botão para capturar a foto -->
+    <button id="capture">Capturar Foto</button>
+    <br>
+
+    <!-- Exibe a foto capturada -->
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <br>
+
+    <!-- Botão para enviar a foto para o servidor -->
+    <button id="upload">Enviar Foto</button>
+
+    <script>
+        // Elementos do DOM
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const uploadButton = document.getElementById('upload');
+
+        // Acessa a câmera do dispositivo
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((error) => {
+                console.error('Erro ao acessar a câmera:', error);
+            });
+
+        // Captura a foto
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            alert('Foto capturada!');
+        });
+
+        // Envia a foto para o servidor
+        uploadButton.addEventListener('click', () => {
+            // Converte a imagem do canvas para um arquivo Blob
+            canvas.toBlob((blob) => {
+                // Cria um FormData para enviar o arquivo
+                const formData = new FormData();
+                formData.append('foto', blob, 'foto.jpg');
+
+                // Envia o arquivo para o servidor usando AJAX
+                fetch('/uploadFoto', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(message => {
+                    alert(message); // Exibe a resposta do servidor
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar a foto:', error);
+                });
+            }, 'image/jpeg');
+        });
+    </script>
+</body>
+</html>

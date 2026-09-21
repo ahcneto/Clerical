@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?xml-stylesheet type="text/xsl" href=""?>
+<salvar connection="cad" xmlns:xsql="urn:oracle-xsql">
+   
+   <xsql:include-request-params/>
+   
+   <xsql:if-param name="IdPessoa" not-equals="0">
+  
+        <xsql:dml>
+
+            UPDATE pessoas
+            SET Nome = '{@Nome}',
+                DtNascimento = ifnull('{@DtNascimento}',null),
+                Fone1 = '{@fone1}',
+                Email = '{@Email}',
+                Endereco = '{@Endereco}',
+                Profissao = '{@Profissao}',
+                NomeEsposa = '{@NomeEsposa}',
+				DtNascEsposa = ifnull('{@DtNascEsposa}',null),
+				ProfissaoEsposa = '{@ProfissaoEsposa}',
+                DtCasamento = ifnull('{@DtCasamento}',null),
+                IdParoquia = {@IdParoquia},
+                Pastoral = '{@Pastoral}'
+            WHERE IdPessoa = {@IdPessoa}
+        </xsql:dml>
+    </xsql:if-param>
+    <xsql:if-param name="IdPessoa" equals="0">
+        <xsql:dml>
+            INSERT INTO pessoas (Nome, DtNascimento, Fone1, Email, Endereco, Profissao, NomeEsposa, DtCasamento, IdParoquia, Pastoral)
+            VALUES (
+                '{@Nome}',
+                '{@DtNascimento}',
+                '{@fone1}',
+                '{@Email}',
+                '{@Endereco}',
+                '{@Profissao}',
+                '{@NomeEsposa}',
+                '{@DtCasamento}',
+                {@IdParoquia},
+                '{@Pastoral}'
+            )
+        </xsql:dml>
+		
+		
+  </xsql:if-param>   
+
+
+<xsql:query connection="cad" xmlns:xsql="urn:oracle-xsql">
+    SELECT IdPessoa FROM pessoas where Nome = '{@Nome}'
+</xsql:query>
+</salvar>
+

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="RelFichaPessoa.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+     <xsql:include-request-params/>   
+	<xsql:query row-element = "PESSOA">
+	SELECT IdPessoa, Nome, r.Descricao as Paroquia, r.Bairro, r.Regiao,  p.classe as idClasse, (case p.Classe when 1 then 'Diacono' when 2 then 'Candidato' when 3 then 'Vocacionado' else 'Outro' end) as Classe 
+    FROM pessoas p left join paroquia r on p.IdParoquia = r.IdParoquia
+	WHERE p.Status = 1 and  p.classe = {@classe}
+	order by Nome
+	</xsql:query>
+	
+	
+</SQL> 	

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="login.xsl"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+<xsql:query connection="cad">
+    SELECT IdPessoa, Nome, Classe
+    FROM pessoas
+    WHERE Fone1 like '%{@fone}%'
+      AND DtNascimento = '{@nasc}';
+</xsql:query>
+
+</SQL>
+  

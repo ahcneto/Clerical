@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Página jQuery Mobile</title>
+    
+    <!-- Inclua o CSS do jQuery Mobile -->
+    <link rel="stylesheet" href="jquery/jquery.mobile-1.4.5.min.css">
+    
+    <!-- Inclua o jQuery -->
+    <script src="jquery/jquery.min.js"></script>
+    
+    <!-- Inclua o jQuery Mobile -->
+    <script src="jquery/jquery.mobile-1.4.5.min.js"></script>
+    <!DOCTYPE html>
+
+    <!-- Estilos personalizados -->
+    <style>
+        /* Estilo para o painel lateral */
+        #menu-lateral {
+            width: 200px; /* Largura do menu */
+            position: fixed; /* Fixa o menu na tela */
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-color: #f5f5f5;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000; /* Garante que o menu fique acima do conteúdo */
+        }
+
+        /* Estilo para o conteúdo central */
+        .conteudo-central {
+            margin-left: 220px; /* Margem para evitar sobreposição com o menu */
+            padding: 15px;
+        }
+
+        /* Estilo para o logo */
+        .logo {
+            text-align: center;
+            padding: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* Estilo para os itens do menu */
+        .ui-listview {
+            margin: 0;
+            padding: 0;
+        }
+        .ui-listview li a {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <!-- Página Principal -->
+    <div data-role="page" id="pagina-principal">
+        <!-- Cabeçalho com Logo -->
+        <div data-role="header">
+            <div class="logo">Minha Logo</div>
+        </div>
+
+        <!-- Menu Lateral -->
+        <div id="menu-lateral" data-swipe-close="false">
+            <h2>Menu</h2>
+            <ul data-role="listview">
+                <li><a href="#pagina1" class="ui-btn">Página 1</a></li>
+                <li><a href="#pagina2" class="ui-btn">Página 2</a></li>
+                <li><a href="#pagina3" class="ui-btn">Página 3</a></li>
+            </ul>
+        </div>
+
+        <!-- Conteúdo Central -->
+        <div data-role="main" class="ui-content conteudo-central">
+            <!-- Conteúdo inicial -->
+            <div id="conteudo">
+                <h2>Bem-vindo!</h2>
+                <p>Selecione uma opção no menu lateral para ver o conteúdo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Página 1 -->
+    <div data-role="page" id="pagina1">
+        <div data-role="header">
+            <div class="logo">Minha Logo</div>
+        </div>
+        <div data-role="main" class="ui-content conteudo-central">
+            <h2>Página 1</h2>
+            <p>Este é o conteúdo da Página 1.</p>
+        </div>
+    </div>
+
+    <!-- Página 2 -->
+    <div data-role="page" id="pagina2">
+        <div data-role="header">
+            <div class="logo">Minha Logo</div>
+        </div>
+        <div data-role="main" class="ui-content conteudo-central">
+            <h2>Página 2</h2>
+            <p>Este é o conteúdo da Página 2.</p>
+        </div>
+    </div>
+
+    <!-- Página 3 -->
+    <div data-role="page" id="pagina3">
+        <div data-role="header">
+            <div class="logo">Minha Logo</div>
+        </div>
+        <div data-role="main" class="ui-content conteudo-central">
+            <h2>Página 3</h2>
+            <p>Este é o conteúdo da Página 3.</p>
+        </div>
+    </div>
+</body>
+</html>

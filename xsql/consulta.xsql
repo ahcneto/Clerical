@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="consulta.xsl"?>
+
+    
+   
+   <xsql:query  connection="cad" xmlns:xsql="urn:oracle-xsql"
+    rowset-element="colunas"
+    row-element="coluna">
+    <![CDATA[
+        SELECT column_name 
+        FROM information_schema.columns 
+         WHERE table_name = 'sqlPessoas'
+        AND table_schema = 'andrezaalmeida_cad' 
+        ORDER BY ordinal_position
+    ]]>
+</xsql:query>
+

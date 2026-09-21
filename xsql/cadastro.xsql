@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="cadastro.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    
+    <xsql:if-param name="IdPessoa" not-equals="0">
+	<xsql:query rowset-element="Pessoas" row-element="Pessoa">
+	SELECT IdPessoa, Nome, Classe, Matricula, tpMatricula, Fone1, Fone2, Email, DtProvisao, IdParoquia, DtNascimento, DtOrdenacao, NomeEsposa, DtNascEsposa, DtCasamento, Endereco, Complemento, Bairro, CEP, Cidade, Estado, Transferido, DioceseTransf, BispoOrdenante, flgTeologia, flgSeminarioLeitor, flgSeminarioAcolito, flgOrdemSacra, flgLeitor, flgAcolito, status, Obs, Profissao, ProfissaoEsposa, Pastoral
+
+    FROM pessoas
+        WHERE IdPessoa = {@IdPessoa}
+		</xsql:query>
+    </xsql:if-param>
+	 <xsql:if-param name="IdPessoa" equals="0">
+	 <xsql:query rowset-element="Pessoas" row-element="Pessoa">
+	SELECT 0 as IdPessoa, '' as  Nome, '' as Classe, '' as Matricula, '' as tpMatricula, '' as Fone1, '' as Fone2, '' as Email, '' as DtProvisao, '' as IdParoquia, '' as DtNascimento, '' as DtOrdenacao, '' as NomeEsposa, '' as DtNascEsposa, '' as DtCasamento, '' as Endereco, '' as Complemento, '' as Bairro, '' as CEP, '' as Cidade, '' as Estado, '' as Transferido, '' as DioceseTransf, '' as BispoOrdenante, '' as flgTeologia, '' as flgSeminarioLeitor, '' as flgSeminarioAcolito, '' as flgOrdemSacra, '' as flgLeitor, '' as flgAcolito, '' as status, '' as Obs, '' as Profissao, '' as ProfissaoEsposa, '' as Pastoral
+    FROM dual
+		</xsql:query>
+    </xsql:if-param>
+	
+
+   
+	<xsql:query rowset-element="Paroquias" row-element="Paroquia">
+	SELECT *  
+    FROM paroquia
+    </xsql:query>
+
+
+	
+	
+</SQL> 	
+
+
+

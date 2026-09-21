@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="RelCandidatosAptosOrdenacao.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    
+   
+	<xsql:query >
+	select IdPessoa,Nome  
+		from pessoas p 
+		where classe = 2 and flgTeologia = 1 and flgOrdemSacra = 1 and flgLeitor = 1 and flgAcolito = 1
+	</xsql:query>
+	
+  
+</SQL> 	

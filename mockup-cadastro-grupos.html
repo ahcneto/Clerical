@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Protótipo — Cadastro de grupos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --orange:#c96a0a; --orange-dark:#a95308; --ink:#172033; --muted:#64748b; --line:#e7ebf0; --page:#f7f8fa; }
+        body { background:var(--page); color:var(--ink); font-family:Arial,sans-serif; }
+        .mock-banner { background:#fff7ed; border-bottom:1px solid #fed7aa; color:#9a4b08; font-size:13px; padding:9px 16px; text-align:center; }
+        .topbar { background:#fff; min-height:70px; border-bottom:1px solid #edf0f4; }
+        .brand { color:var(--ink); font-size:21px; font-weight:800; text-decoration:none; }
+        .brand i { color:var(--orange); }
+        .page-title h1 { font-size:30px; letter-spacing:-.6px; }
+        .btn-orange { background:var(--orange); border-color:var(--orange); color:#fff; }
+        .btn-orange:hover { background:var(--orange-dark); border-color:var(--orange-dark); color:#fff; }
+        .panel { background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:0 2px 8px rgba(15,23,42,.04); }
+        .group-list { padding:10px; }
+        .group-item { width:100%; display:flex; align-items:center; gap:12px; border:0; background:transparent; border-radius:12px; padding:13px 12px; text-align:left; margin-bottom:3px; }
+        .group-item:hover { background:#f8fafc; }
+        .group-item.active { background:#fff5eb; box-shadow:inset 3px 0 var(--orange); }
+        .group-dot { width:12px; height:12px; border-radius:50%; flex:0 0 auto; }
+        .group-copy { min-width:0; flex:1; }
+        .group-copy strong, .group-copy small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .group-copy small { color:var(--muted); margin-top:2px; }
+        .status-dot { width:7px; height:7px; background:#22c55e; border-radius:50%; display:inline-block; margin-right:5px; }
+        .nav-pills { gap:5px; border-bottom:1px solid var(--line); padding:0 20px; }
+        .nav-pills .nav-link { color:#526077; border-radius:0; padding:16px 12px 13px; border-bottom:3px solid transparent; font-weight:600; font-size:14px; }
+        .nav-pills .nav-link.active { color:var(--orange); background:transparent; border-bottom-color:var(--orange); }
+        .tab-pane { padding:24px; }
+        .section-title { font-size:17px; font-weight:750; margin:0; }
+        .section-note { color:var(--muted); font-size:13px; margin:3px 0 0; }
+        .section-block + .section-block { border-top:1px solid var(--line); margin-top:24px; padding-top:24px; }
+        .form-label { font-size:13px; font-weight:700; color:#46536a; }
+        .form-control,.form-select { min-height:44px; border-radius:10px; border-color:#dce2e9; }
+        .form-control:focus,.form-select:focus { border-color:#e3a15f; box-shadow:0 0 0 .2rem rgba(201,106,10,.12); }
+        .module-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+        .module-card { border:1px solid var(--line); border-radius:13px; padding:15px; display:flex; align-items:flex-start; gap:12px; cursor:pointer; }
+        .module-card:has(input:checked) { border-color:#efb67d; background:#fffaf5; }
+        .module-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:10px; background:#f1f5f9; color:#526077; font-size:18px; }
+        .module-card:has(input:checked) .module-icon { background:#ffedd5; color:var(--orange); }
+        .module-text { flex:1; }
+        .module-text strong { display:block; font-size:14px; }
+        .module-text small { color:var(--muted); display:block; line-height:1.35; margin-top:3px; }
+        .form-switch .form-check-input { width:2.4em; height:1.25em; cursor:pointer; }
+        .form-check-input:checked { background-color:var(--orange); border-color:var(--orange); }
+        .rule-preview { background:#f8fafc; border:1px dashed #cbd5e1; border-radius:13px; padding:16px; }
+        .rule-preview strong { color:#334155; }
+        .transition { display:grid; grid-template-columns:1fr auto 1fr auto; align-items:center; gap:12px; border:1px solid var(--line); border-radius:13px; padding:14px 16px; margin-bottom:10px; }
+        .transition .arrow { color:var(--orange); font-size:18px; }
+        .transition small { color:var(--muted); display:block; }
+        .scope-row { display:grid; grid-template-columns:minmax(180px,1.2fr) repeat(3,minmax(130px,1fr)); gap:10px; align-items:center; border-bottom:1px solid #eef1f4; padding:13px 0; }
+        .scope-row:last-child { border-bottom:0; }
+        .scope-head { color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; }
+        .sticky-actions { position:sticky; bottom:0; background:rgba(255,255,255,.96); border-top:1px solid var(--line); border-radius:0 0 16px 16px; padding:14px 24px; z-index:5; backdrop-filter:blur(7px); }
+        .color-choice { display:flex; gap:8px; align-items:center; min-height:44px; }
+        .color-swatch { width:27px; height:27px; border:3px solid #fff; border-radius:50%; box-shadow:0 0 0 1px #ccd4df; cursor:pointer; }
+        .color-swatch.active { box-shadow:0 0 0 2px var(--orange); }
+        .badge-soft { background:#f1f5f9; color:#475569; border-radius:8px; padding:5px 8px; font-size:12px; }
+        #toastMock { position:fixed; right:22px; bottom:22px; z-index:20; min-width:300px; }
+        @media(max-width:991px){ .module-grid{grid-template-columns:1fr}.scope-row{grid-template-columns:1fr}.scope-head{display:none}.transition{grid-template-columns:1fr auto 1fr}.transition button{grid-column:1/-1}.group-panel{margin-bottom:16px} }
+    </style>
+</head>
+<body>
+<div class="mock-banner"><i class="bi bi-bezier2"></i> Protótipo navegável — nenhuma informação é enviada ou gravada</div>
+<nav class="topbar d-flex align-items-center px-4">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        <a class="brand" href="#"><i class="bi bi-bank me-2"></i>Clerical</a>
+        <div class="d-flex align-items-center gap-2 text-secondary"><i class="bi bi-person-circle fs-4"></i><span class="d-none d-sm-inline">Administrador</span></div>
+    </div>
+</nav>
+
+<main class="container-fluid px-lg-5 py-4">
+    <div class="page-title d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+        <div><h1 class="fw-bold mb-1">Cadastro de grupos</h1><p class="text-muted mb-0">Defina identidade, módulos e regras aplicadas aos membros de cada grupo.</p></div>
+        <button class="btn btn-orange px-4" id="novoGrupo"><i class="bi bi-plus-lg me-1"></i> Novo grupo</button>
+    </div>
+
+    <div class="row g-4 align-items-start">
+        <aside class="col-lg-3 col-xl-2 group-panel">
+            <div class="panel overflow-hidden">
+                <div class="p-3 border-bottom"><div class="input-group"><span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span><input id="buscarGrupo" class="form-control border-start-0" placeholder="Buscar grupo"></div></div>
+                <div class="group-list" id="listaGrupos"></div>
+            </div>
+        </aside>
+
+        <section class="col-lg-9 col-xl-10">
+            <form id="grupoForm" class="panel overflow-hidden">
+                <div class="px-4 py-3 border-bottom d-flex justify-content-between align-items-center gap-3">
+                    <div><h2 class="h5 fw-bold mb-1" id="formTitulo">Diáconos</h2><span class="text-muted small" id="formSubtitulo">Grupo ativo · código 1</span></div>
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="grupoAtivo" checked><label class="form-check-label fw-semibold" for="grupoAtivo">Grupo ativo</label></div>
+                </div>
+
+                <ul class="nav nav-pills flex-nowrap overflow-auto" role="tablist">
+                    <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#identificacao" type="button">Identificação</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#modulos" type="button">Módulos</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#financeiro" type="button">Contribuição</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#presenca" type="button">Presença</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#progressao" type="button">Progressão</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#acesso" type="button">Acesso</button></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="identificacao">
+                        <div class="section-block"><h3 class="section-title">Identificação do grupo</h3><p class="section-note">Os nomes serão usados em filtros, relatórios, cartões e históricos.</p>
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6"><label class="form-label" for="nomeSingular">Nome no singular *</label><input class="form-control" id="nomeSingular" required></div>
+                                <div class="col-md-6"><label class="form-label" for="nomePlural">Nome no plural *</label><input class="form-control" id="nomePlural" required></div>
+                                <div class="col-md-3"><label class="form-label" for="sigla">Sigla</label><input class="form-control" id="sigla" maxlength="10"></div>
+                                <div class="col-md-3"><label class="form-label" for="ordem">Ordem de exibição</label><input class="form-control" id="ordem" type="number" min="1"></div>
+                                <div class="col-md-3"><label class="form-label">Cor de identificação</label><div class="color-choice" id="cores"></div></div>
+                                <div class="col-md-3"><label class="form-label" for="contexto">Contexto institucional</label><select class="form-select" id="contexto"><option value="CAD">CAD</option><option value="ESCOLA">Escola Diaconal</option><option value="OUTRO">Outro</option></select></div>
+                                <div class="col-12"><label class="form-label" for="descricao">Descrição administrativa</label><textarea class="form-control" id="descricao" rows="3" placeholder="Explique a finalidade deste grupo"></textarea></div>
+                            </div>
+                        </div>
+                        <div class="section-block"><h3 class="section-title">Comportamento no cadastro</h3><p class="section-note">Define se o grupo é apenas institucional ou participa da gestão de membros.</p>
+                            <div class="row g-3 mt-1">
+                                <div class="col-md-6"><label class="module-card"><span class="module-icon"><i class="bi bi-person-vcard"></i></span><span class="module-text"><strong>Grupo operacional</strong><small>Permite associar membros, encontros e rotinas do sistema.</small></span><span class="form-check form-switch"><input id="operacional" class="form-check-input" type="checkbox"></span></label></div>
+                                <div class="col-md-6"><label class="module-card"><span class="module-icon"><i class="bi bi-person-lock"></i></span><span class="module-text"><strong>Disponível para usuários</strong><small>Permite vincular contas de acesso a este grupo.</small></span><span class="form-check form-switch"><input id="usuarios" class="form-check-input" type="checkbox"></span></label></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="modulos">
+                        <h3 class="section-title">Módulos habilitados</h3><p class="section-note mb-3">Um grupo novo só aparecerá nos módulos selecionados.</p>
+                        <div class="module-grid" id="gradeModulos"></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="financeiro">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-4"><div><h3 class="section-title">Regra de contribuição</h3><p class="section-note">Substitui os valores e calendários fixos existentes hoje.</p></div><div class="form-check form-switch"><input id="contribuicaoAtiva" class="form-check-input" type="checkbox"><label for="contribuicaoAtiva" class="form-check-label fw-semibold">Controlar contribuição</label></div></div>
+                        <fieldset id="camposContribuicao">
+                            <div class="row g-3">
+                                <div class="col-md-4"><label class="form-label" for="valor">Valor padrão</label><div class="input-group"><span class="input-group-text">R$</span><input id="valor" class="form-control" inputmode="decimal"></div></div>
+                                <div class="col-md-5"><label class="form-label" for="periodicidade">Competências esperadas</label><select id="periodicidade" class="form-select"><option value="MENSAL">Todos os meses decorridos</option><option value="ENCONTRO">Somente meses com encontro</option><option value="MANUAL">Definidas manualmente</option><option value="NENHUMA">Não calcular expectativa</option></select></div>
+                                <div class="col-md-3"><label class="form-label" for="vencimento">Dia do vencimento</label><input id="vencimento" class="form-control" type="number" min="1" max="28" value="10"></div>
+                                <div class="col-md-6"><label class="module-card"><span class="module-icon"><i class="bi bi-pencil-square"></i></span><span class="module-text"><strong>Permitir alterar o valor</strong><small>O responsável financeiro poderá informar outro valor no lançamento.</small></span><span class="form-check form-switch"><input id="valorEditavel" class="form-check-input" type="checkbox"></span></label></div>
+                                <div class="col-md-6"><label class="module-card"><span class="module-icon"><i class="bi bi-calendar-check"></i></span><span class="module-text"><strong>Somente até o mês atual</strong><small>Não considera competências futuras no percentual.</small></span><span class="form-check form-switch"><input id="ateAtual" class="form-check-input" type="checkbox" checked></span></label></div>
+                            </div>
+                            <div class="rule-preview mt-4"><i class="bi bi-lightbulb text-warning me-2"></i><strong>Prévia:</strong> <span id="previaContribuicao"></span></div>
+                        </fieldset>
+                    </div>
+
+                    <div class="tab-pane fade" id="presenca">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-4"><div><h3 class="section-title">Presença e indicadores</h3><p class="section-note">Define como o sistema calcula a participação esperada.</p></div><div class="form-check form-switch"><input id="presencaAtiva" class="form-check-input" type="checkbox"><label for="presencaAtiva" class="form-check-label fw-semibold">Controlar presença</label></div></div>
+                        <fieldset id="camposPresenca">
+                            <div class="row g-3">
+                                <div class="col-md-6"><label class="form-label" for="fontePresenca">Participações esperadas</label><select id="fontePresenca" class="form-select"><option value="ENCONTROS">Encontros cadastrados para o grupo</option><option value="MENSAL">Uma participação por mês</option><option value="FIXA">Quantidade anual fixa</option><option value="NAO">Não calcular percentual</option></select></div>
+                                <div class="col-md-3"><label class="form-label" for="meta">Meta mínima (%)</label><input id="meta" class="form-control" type="number" min="0" max="100" value="75"></div>
+                                <div class="col-md-3"><label class="form-label" for="quantidadeFixa">Quantidade anual</label><input id="quantidadeFixa" class="form-control" type="number" min="1" disabled></div>
+                                <div class="col-md-6"><label class="module-card"><span class="module-icon"><i class="bi bi-shield-check"></i></span><span class="module-text"><strong>Justificada cumpre a meta</strong><small>Conta presença justificada como participação para o indicador.</small></span><span class="form-check form-switch"><input id="justificadaConta" class="form-check-input" type="checkbox"></span></label></div>
+                                <div class="col-md-6"><label class="module-card"><span class="module-icon"><i class="bi bi-people"></i></span><span class="module-text"><strong>Permitir participação de esposas</strong><small>Disponibiliza a opção nos encontros deste grupo.</small></span><span class="form-check form-switch"><input id="esposas" class="form-check-input" type="checkbox"></span></label></div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="tab-pane fade" id="progressao">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><h3 class="section-title">Progressão e movimentações</h3><p class="section-note">Cadastre ações permitidas e seus grupos de destino.</p></div><button type="button" class="btn btn-outline-secondary" id="addTransicao"><i class="bi bi-plus-lg me-1"></i> Adicionar transição</button></div>
+                        <div id="listaTransicoes"></div>
+                        <div class="section-block"><h3 class="section-title">Acompanhamento ministerial</h3><p class="section-note mb-3">Escolha os indicadores aplicáveis ao grupo.</p><div class="row g-2" id="indicadoresMinisteriais"></div></div>
+                    </div>
+
+                    <div class="tab-pane fade" id="acesso">
+                        <h3 class="section-title">Escopo por perfil</h3><p class="section-note mb-3">Controle separado por módulo; evita que uma exceção de membros libere dados financeiros.</p>
+                        <div class="scope-row scope-head"><div>Módulo</div><div>REP</div><div>FIN</div><div>EXT</div></div>
+                        <div id="escopos"></div>
+                        <div class="alert alert-warning mt-4 mb-0"><i class="bi bi-exclamation-triangle me-2"></i><strong>Atenção:</strong> alterações de escopo impactam quais pessoas e grupos cada perfil pode consultar.</div>
+                    </div>
+                </div>
+
+                <div class="sticky-actions d-flex justify-content-between align-items-center gap-3">
+                    <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>Protótipo: as alterações não serão persistidas.</span>
+                    <div class="d-flex gap-2"><button type="button" class="btn btn-light" id="cancelar">Descartar</button><button class="btn btn-orange px-4" type="submit"><i class="bi bi-check-lg me-1"></i> Salvar grupo</button></div>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<div id="toastMock" class="alert alert-success shadow d-none"><i class="bi bi-check-circle-fill me-2"></i><span></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const cores=["#16a34a","#d97706","#2563eb","#7c3aed","#dc2626","#0891b2","#475569"];
+const modulos=[
+ ["membros","bi-people","Membros","Listagem, cadastro e perfil dos membros"],
+ ["encontros","bi-calendar-event","Encontros","Agenda e encontros específicos do grupo"],
+ ["presencas","bi-person-check","Presenças","Registro e indicadores de participação"],
+ ["contribuicoes","bi-cash-coin","Contribuições","Controle de competências e pagamentos"],
+ ["formacao","bi-mortarboard","Formação","Programas e disciplinas vinculados ao grupo"],
+ ["avaliacoes","bi-clipboard2-check","Avaliações","Ciclos de avaliação dos membros"],
+ ["documentacao","bi-folder-check","Documentação","Checklists documentais do grupo"],
+ ["relatorios","bi-bar-chart","Relatórios","Filtros, consolidações e exportações"]
+];
+const base={
+ 1:{singular:"Diácono",plural:"Diáconos",sigla:"DIA",ordem:1,cor:"#16a34a",contexto:"CAD",descricao:"Diáconos permanentes vinculados à Arquidiocese.",ativo:true,operacional:true,usuarios:true,mods:modulos.map(x=>x[0]),contrib:true,valor:"162,10",periodicidade:"MENSAL",presenca:true,fonte:"ENCONTROS",meta:75,esposas:true,ministeriais:["Pastoral","Provisão","Ordenação"],transicoes:[]},
+ 2:{singular:"Candidato",plural:"Candidatos",sigla:"CAN",ordem:2,cor:"#d97706",contexto:"ESCOLA",descricao:"Membros em etapa de candidatura e preparação ministerial.",ativo:true,operacional:true,usuarios:true,mods:modulos.map(x=>x[0]),contrib:true,valor:"10,00",periodicidade:"ENCONTRO",presenca:true,fonte:"ENCONTROS",meta:75,esposas:true,ministeriais:["Teologia","Ordens Sacras","Leitor","Acólito","Aptidão para ordenação"],transicoes:[{acao:"Ordenação Diaconal",destino:"Diáconos",efeito:"Gravar data de ordenação"}]},
+ 3:{singular:"Vocacionado",plural:"Vocacionados",sigla:"VOC",ordem:3,cor:"#2563eb",contexto:"ESCOLA",descricao:"Pessoas em discernimento vocacional e acompanhamento inicial.",ativo:true,operacional:true,usuarios:true,mods:modulos.map(x=>x[0]),contrib:true,valor:"10,00",periodicidade:"ENCONTRO",presenca:true,fonte:"ENCONTROS",meta:75,esposas:true,ministeriais:["Teologia"],transicoes:[{acao:"Mudança de estágio",destino:"Candidatos",efeito:"Sem efeito adicional"}]},
+ 0:{singular:"Clérigo",plural:"Clero",sigla:"CLR",ordem:4,cor:"#7c3aed",contexto:"OUTRO",descricao:"Grupo institucional disponível para usuários, fora da gestão operacional.",ativo:true,operacional:false,usuarios:true,mods:["relatorios"],contrib:false,valor:"0,00",periodicidade:"NENHUMA",presenca:false,fonte:"NAO",meta:0,esposas:false,ministeriais:[],transicoes:[]}
+};
+let atual=1, novo=false, corAtual=base[1].cor;
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function renderGrupos(){const termo=$("buscarGrupo").value.toLowerCase();$("listaGrupos").innerHTML=Object.entries(base).sort((a,b)=>a[1].ordem-b[1].ordem).filter(([,g])=>g.plural.toLowerCase().includes(termo)).map(([id,g])=>`<button type="button" class="group-item ${!novo&&Number(id)===atual?'active':''}" data-id="${id}"><span class="group-dot" style="background:${g.cor}"></span><span class="group-copy"><strong>${esc(g.plural)}</strong><small><span class="status-dot"></span>Ativo · ordem ${g.ordem}</small></span><i class="bi bi-chevron-right text-muted"></i></button>`).join("");document.querySelectorAll(".group-item").forEach(b=>b.onclick=()=>carregar(Number(b.dataset.id)));}
+function renderCores(){$("cores").innerHTML=cores.map(c=>`<button type="button" class="color-swatch ${c===corAtual?'active':''}" style="background:${c}" data-cor="${c}" aria-label="Selecionar cor"></button>`).join("");document.querySelectorAll(".color-swatch").forEach(b=>b.onclick=()=>{corAtual=b.dataset.cor;renderCores();});}
+function renderModulos(ativos=[]){$("gradeModulos").innerHTML=modulos.map(([id,icone,nome,desc])=>`<label class="module-card"><span class="module-icon"><i class="bi ${icone}"></i></span><span class="module-text"><strong>${nome}</strong><small>${desc}</small></span><span class="form-check form-switch"><input class="form-check-input modulo" data-modulo="${id}" type="checkbox" ${ativos.includes(id)?'checked':''}></span></label>`).join("");}
+const todosIndicadores=["Teologia","Seminário de Leitor","Seminário de Acólito","Ordens Sacras","Leitor","Acólito","Aptidão ministerial","Aptidão para ordenação","Pastoral","Provisão","Ordenação"];
+function renderMinisteriais(ativos=[]){$("indicadoresMinisteriais").innerHTML=todosIndicadores.map(x=>`<div class="col-md-4"><label class="border rounded-3 p-3 d-flex gap-2 align-items-center bg-white w-100"><input class="form-check-input mt-0 indicador" type="checkbox" value="${esc(x)}" ${ativos.includes(x)?'checked':''}><span class="small fw-semibold">${esc(x)}</span></label></div>`).join("");}
+function renderTransicoes(lista=[]){$("listaTransicoes").innerHTML=lista.length?lista.map((t,i)=>`<div class="transition"><div><small>Ação</small><strong>${esc(t.acao)}</strong></div><i class="bi bi-arrow-right arrow"></i><div><small>Destino</small><strong>${esc(t.destino)}</strong><small>${esc(t.efeito)}</small></div><button type="button" class="btn btn-sm btn-outline-danger remover-transicao" data-i="${i}"><i class="bi bi-trash"></i></button></div>`).join(""):'<div class="text-center text-muted border rounded-3 py-5"><i class="bi bi-signpost-split fs-2 d-block mb-2"></i>Nenhuma transição de saída configurada.</div>';document.querySelectorAll(".remover-transicao").forEach(b=>b.onclick=()=>{const g=dadosTela();g.transicoes.splice(Number(b.dataset.i),1);renderTransicoes(g.transicoes);});}
+function renderEscopos(){const linhas=[["Membros","REGIAO_TODOS","PROPRIO","TODOS"],["Encontros","TODOS","PROPRIO","TODOS"],["Contribuições","PROPRIO","PROPRIO","TODOS"],["Relatórios","REGIAO_TODOS","PROPRIO","TODOS"]];const opts=v=>[["PROPRIO","Próprio grupo"],["REGIAO_TODOS","Todos da região"],["TODOS","Todos os grupos"],["NENHUM","Sem acesso"]].map(x=>`<option value="${x[0]}" ${x[0]===v?'selected':''}>${x[1]}</option>`).join("");$("escopos").innerHTML=linhas.map(x=>`<div class="scope-row"><strong>${x[0]}</strong><select class="form-select">${opts(x[1])}</select><select class="form-select">${opts(x[2])}</select><select class="form-select">${opts(x[3])}</select></div>`).join("");}
+function carregar(id){atual=id;novo=false;const g=base[id];corAtual=g.cor;$("formTitulo").textContent=g.plural;$("formSubtitulo").textContent=`Grupo ativo · código ${id}`;$("grupoAtivo").checked=g.ativo;$("nomeSingular").value=g.singular;$("nomePlural").value=g.plural;$("sigla").value=g.sigla;$("ordem").value=g.ordem;$("contexto").value=g.contexto;$("descricao").value=g.descricao;$("operacional").checked=g.operacional;$("usuarios").checked=g.usuarios;$("contribuicaoAtiva").checked=g.contrib;$("valor").value=g.valor;$("periodicidade").value=g.periodicidade;$("presencaAtiva").checked=g.presenca;$("fontePresenca").value=g.fonte;$("meta").value=g.meta;$("esposas").checked=g.esposas;renderCores();renderModulos(g.mods);renderMinisteriais(g.ministeriais);renderTransicoes(g.transicoes);renderGrupos();atualizarEstados();}
+function dadosTela(){return {...base[atual],transicoes:[...(base[atual]?.transicoes||[])]};}
+function atualizarEstados(){$("camposContribuicao").disabled=!$("contribuicaoAtiva").checked;$("camposPresenca").disabled=!$("presencaAtiva").checked;$("quantidadeFixa").disabled=$("fontePresenca").value!=="FIXA";const p=$("periodicidade").value,v=$("valor").value||"0,00";$("previaContribuicao").textContent=!$("contribuicaoAtiva").checked?"Este grupo não terá controle de contribuição.":p==="MENSAL"?`R$ ${v} por mês, considerando todos os meses decorridos.`:p==="ENCONTRO"?`R$ ${v} somente nos meses em que houver encontro do grupo.`:p==="MANUAL"?`R$ ${v}; as competências serão definidas pelo responsável.`:"Os pagamentos poderão ser registrados, mas não haverá expectativa calculada.";}
+function toast(msg){$("toastMock").querySelector("span").textContent=msg;$("toastMock").classList.remove("d-none");setTimeout(()=>$("toastMock").classList.add("d-none"),3200);}
+$("buscarGrupo").addEventListener("input",renderGrupos);
+$("novoGrupo").onclick=()=>{novo=true;$("formTitulo").textContent="Novo grupo";$("formSubtitulo").textContent="Ainda não salvo";$("grupoForm").reset();corAtual=cores[6];$("ordem").value=5;$("contexto").value="ESCOLA";renderCores();renderModulos([]);renderMinisteriais([]);renderTransicoes([]);renderGrupos();atualizarEstados();document.querySelector('[data-bs-target="#identificacao"]').click();$("nomeSingular").focus();};
+$("cancelar").onclick=()=>carregar(atual);
+$("grupoForm").onsubmit=e=>{e.preventDefault();toast("Simulação concluída. Nenhum dado foi gravado.");};
+$("addTransicao").onclick=()=>{const g=dadosTela();g.transicoes.push({acao:"Nova movimentação",destino:"Selecione o destino",efeito:"Configuração pendente"});renderTransicoes(g.transicoes);toast("Transição adicionada apenas ao protótipo.");};
+["contribuicaoAtiva","periodicidade","valor","presencaAtiva","fontePresenca"].forEach(id=>$(id).addEventListener("input",atualizarEstados));
+renderEscopos();carregar(1);
+</script>
+</body>
+</html>

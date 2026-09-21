@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<xsql:query xmlns:xsql="urn:oracle-xsql" connection="cad">
+  SELECT IdParoquia, Descricao, Bairro, Regiao 
+  FROM paroquia
+  ORDER BY Descricao
+</xsql:query>

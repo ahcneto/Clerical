@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="RelResumoPorRegiao.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+     <xsql:include-request-params/>
+   
+   <xsql:query rowset-element="REGIOES" row-element="REGIAO">
+      select idRegiao, Regiao from tmp_regiao tr 
+		order by 1
+   </xsql:query>
+   
+	<xsql:query >
+	select ifnull(Regiao,'Total') as Regiao, Ifnull(Paroquia,'-') as Paroquia, Qtd 
+	from 
+	( SELECT  r.Regiao, concat(r.Descricao ,' (', r.Cidade,'/',r.Bairro,')') as Paroquia, Count(p.IdPessoa) as Qtd 
+
+	FROM pessoas p  join paroquia r on p.IdParoquia = r.IdParoquia
+	WHERE p.Status = 1 and p.Classe = '{@classe}'
+	and (r.IdRegiao = '{@regiao}' or ifnull('{@regiao}', 0) = 0)
+	GROUP by r.Regiao, Paroquia	WITH ROLLUP ) as T
+		
+	</xsql:query>
+  
+</SQL> 	

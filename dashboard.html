@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Diaconato</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+
+<div class="container-fluid p-1">
+
+   <div class="dashboard-header mb-3">
+
+    <div class="header-content">
+
+        <div class="header-left">
+            <h1>PAINEL DO DIACONATO</h1>
+            <p>Arquidiocese de Fortaleza</p>
+        </div>
+
+        <div class="header-right">
+            <div id="regiaoSelecionadaLabel" class="header-status">
+                Região: TODAS
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+    <div class="row g-2 mb-2">
+        <div class="col"><div class="kpi-card" ><h3 id="kpiRegioes">9</h3><span>Regiões</span></div></div>
+        <div class="col"><div class="kpi-card"><h3 id="kpiParoquias">0</h3><span>Paróquias</span></div></div>
+        <div class="col"><div class="kpi-card"  onclick="selecionarTipo('DIACONO')" id="cardDiaconos"><h3 id="kpiDiaconos">0</h3><span>Diáconos</span></div></div>
+        <div class="col"><div class="kpi-card"  onclick="selecionarTipo('CANDIDATO')" id="cardCandidatos"><h3 id="kpiCandidatos">0</h3><span>Candidatos</span></div></div>
+        <div class="col"><div class="kpi-card"  onclick="selecionarTipo('VOCACIONADO')" id="cardVocacionados"><h3 id="kpiVocacionados">0</h3><span>Vocacionados</span></div></div>
+        <div class="col"><div class="kpi-card"><h3 id="kpiIdade">0</h3><span>Idade Média</span></div></div>
+    </div>
+
+     <div class="row">
+
+        <div class="col-md-5">
+            <div class="panel-card mt-1">
+                <h4>Mapa das Regiões Episcopais</h4>
+
+                <div class="map-container">
+                    <img src="img/mapa-fortaleza.png" usemap="#image-map" id="mapaReal">
+
+                    <map name="image-map">
+
+                       <!-- REGIÃO 1 -->
+						<area alt="REG1"
+							  title="Região Metropolitana Nossa Senhora da Conceição"
+							  href="javascript:void(0)"
+							  shape="poly"
+							  coords="907,318,1005,257,1100,301,1158,430,1100,564,1025,694,915,681,847,541,839,416"
+							  onclick="selecionarRegiao('R1')">
+
+						<!-- REGIÃO 2 -->
+						<area alt="REG2"
+							  title="Região Sertão São Francisco das Chagas"
+							  href="javascript:void(0)"
+							  shape="poly"
+							  coords="57,304,138,298,237,333,350,396,379,522,307,622,196,613,104,566,60,477"
+							  onclick="selecionarRegiao('R2')">
+
+						<!-- REGIÃO 3 -->
+						<area alt="REG3"
+							  title="Região Metropolitana Sagrada Família"
+							  href="javascript:void(0)"
+							  shape="poly"
+							  coords="475,523,626,497,756,555,819,714,755,938,580,985,440,831,412,637"
+							  onclick="selecionarRegiao('R3')">
+	  
+						  <!-- REGIÃO 4 -->
+					<area alt="REG4"
+						  title="Região Praia São Pedro e São Paulo"
+						  href="javascript:void(0)"
+						  shape="poly"
+						  coords="1163,382,1260,380,1365,460,1458,602,1405,683,1295,654,1189,617,1140,530"
+						  onclick="selecionarRegiao('R4')">
+
+					<!-- REGIÃO 5 -->
+					<area alt="REG5"
+						  title="Região Metropolitana Bom Jesus dos Aflitos"
+						  href="javascript:void(0)"
+						  shape="poly"
+						  coords="366,122,513,121,653,165,739,258,683,396,525,401,402,350,347,254"
+						  onclick="selecionarRegiao('R5')">
+
+					<!-- REGIÃO 6 -->
+					<area alt="REG6"
+						  title="Região Metropolitana Nossa Senhora da Assunção"
+						  href="javascript:void(0)"
+						  shape="poly"
+						  coords="378,398,544,404,683,394,820,472,741,591,629,621,510,577,422,520"
+						  onclick="selecionarRegiao('R6')">
+						  
+						  
+						  <!-- REGIÃO 7 -->
+					<area alt="REG7"
+						  title="Região Metropolitana São José"
+						  href="javascript:void(0)"
+						  shape="poly"
+						  coords="742,124,872,120,984,179,967,303,907,399,815,390,736,260"
+						  onclick="selecionarRegiao('R7')">
+
+					<!-- REGIÃO 8 -->
+					<area alt="REG8"
+						  title="Região Serra Nossa Senhora da Palma"
+						  href="javascript:void(0)"
+						  shape="poly"
+						  coords="181,585,311,617,410,639,446,809,351,942,218,898,142,781,128,669"
+						  onclick="selecionarRegiao('R8')">
+
+					<!-- REGIÃO 9 -->
+					<area alt="REG9"
+						  title="Região Metropolitana Nossa Senhora dos Prazeres"
+						  href="javascript:void(0)"
+						  shape="poly"
+						  coords="815,620,917,552,1011,597,1068,738,1027,925,839,985,741,832,758,709"
+						  onclick="selecionarRegiao('R9')">
+
+
+                    </map>
+                </div>
+            </div>
+			
+			<div class="panel-card mt-2">
+    <h4>Resumo por Região</h4>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Região</th>
+                <th>Voc.</th>
+                <th>Cand.</th>
+                <th>Diác.</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="regioesBody"></tbody>
+    </table>
+</div>
+        </div>
+		
+
+    <!-- COLUNA DIREITA -->
+	
+	<div class="col-md-7 coluna-direita">
+
+    <!-- PARÓQUIAS -->
+    <div class="panel-card card-paroquias">
+        <h4>Paróquias</h4>
+
+        <div class="table-scroll-paroquias">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Paróquia</th>
+                        <th>Diáconos</th>
+                        <th>Candidatos</th>
+                        <th>Vocacionados</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="paroquiasBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PESSOAS -->
+   <div class="panel-card card-pessoas">
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Pessoas</h4>
+        <input type="text"
+               id="buscaNome"
+               class="form-control"
+               placeholder="Buscar por nome..."
+               style="max-width: 300px;">
+    </div>
+		
+        <div class="table-scroll-pessoas">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Idade</th>
+                        <th>Turma/Ordenação</th>
+                        <th>Paróquia</th>
+                        <th>Região</th>
+                    </tr>
+                </thead>
+                <tbody id="pessoasBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+       
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/image-map-resizer@1.0.10/js/imageMapResizer.min.js"></script>
+<script src="js/dashboard.js?v=20260721-1"></script>
+
+</body>
+</html>

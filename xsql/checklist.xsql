@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="{@cmd}.xsl"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+  <xsql:include-request-params/>
+  
+  <xsql:if-param name="IdEncontro" equals="0">
+  <xsql:dml>
+  INSERT INTO Encontros (Classe, Descricao, DtEncontro, Detalhe, Checklist, flgCustom1, NmCustom1)
+VALUES({@Classe}, '{@Descricao}', '{@DtEncontro}', '{@Detalhe}',1,'{@flgCustom1}','{@NmCustom1}' );
+</xsql:dml>
+  </xsql:if-param>	 
+  
+  <xsql:query connection="cad" rowset-element="Anos" row-element="Ano">
+    SELECT distinct YEAR(DtEncontro) as Ano FROM Encontros
+  </xsql:query>
+  
+<xsql:query connection="cad" rowset-element="Meses" row-element="Mes">
+    SELECT distinct MONTH(DtEncontro) as Mes FROM Encontros
+  </xsql:query>
+  
+    <!-- Filtro por Classe e Data -->
+    <xsql:query connection="cad">
+        SELECT * FROM Encontros 
+        WHERE (Classe = {@classe} OR {@classe} = 0)
+          AND (MONTH(DtEncontro) = {@Mes} OR {@Mes} = 0 )
+		  AND (YEAR(DtEncontro) = {@Ano} OR {@Ano} = 0)
+		  and Checklist = 1
+        ORDER BY DtEncontro DESC;
+    </xsql:query>
+
+   
+
+</SQL>

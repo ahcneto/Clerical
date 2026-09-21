@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+
+  <xsql:include-request-params/>
+  
+  
+ <!-- Filtro por Classe e Data -->
+    <xsql:query connection="cad">
+        SELECT
+            e.IdEncontro,
+            DATE_FORMAT(e.DtEncontro,'%d/%m/%Y') as Data,
+            e.Descricao,
+            '' as Local,
+            CASE pe.flgPresenca
+                WHEN 0 THEN 'Faltou'
+                WHEN 1 THEN 'Presente'
+                WHEN 2 THEN 'Justificado'
+            END as Presenca,
+            IFNULL(pe.Justificativa,'') as Justificativa
+        FROM Encontros e
+        INNER JOIN participanteEncontro pe
+            ON e.IdEncontro = pe.IdEncontro
+        INNER JOIN sqlPessoas p ON p.IdPessoa=pe.IdPessoa
+        WHERE pe.IdPessoa = '{@id}' and (
+            pe.IdPessoa='{@usuarioId}' or '{@usuarioPerfil}' in ('ADM','EXT') or
+            ('{@usuarioPerfil}'='REP' and (
+                COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM')='TODOS' or
+                (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM')='PROPRIO' and p.Classe='{@usuarioGrupoId}') or
+                (COALESCE((select EscopoRepMembros from grupos where IdGrupo='{@usuarioGrupoId}'),'NENHUM')='REGIAO_TODOS' and p.IdRegiao='{@usuarioRegiaoId}')
+            ))
+        )
+        ORDER BY e.DtEncontro DESC
+        
+    </xsql:query>
+
+</SQL>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="RelSituacaoCandidatos.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    
+   
+	<xsql:query >
+	select IdPessoa,Nome, 
+		case when flgTeologia = 1 then 'OK' else '' end as Teologia,
+		case when flgOrdemSacra = 1 then 'OK' else '' end as OrdemSacra,
+		case when flgLeitor = 1 then 'OK' else '' end as Leitor,
+		case when flgAcolito = 1 then 'OK' else '' end as Acolito
+	from pessoas p 
+	where classe = 2 
+	Order by 3 desc,4 desc,5 desc,6 desc, 1 asc	
+			
+	</xsql:query>
+  
+</SQL> 	

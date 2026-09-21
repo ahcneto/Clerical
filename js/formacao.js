@@ -1,0 +1,17 @@
+const formacaoEsc=valor=>{const e=document.createElement("div");e.textContent=valor??"";return e.innerHTML;};
+const statusFormacao={PENDENTE:"Pendente",EM_ANDAMENTO:"Em andamento",CONCLUIDA:"Concluída"};
+let dadosFormacao={disciplinas:[]};
+function renderFormacao(){
+ const termo=pesquisaFormacao.value.toLocaleLowerCase("pt-BR"),status=filtroFormacaoStatus.value,itens=dadosFormacao.disciplinas.filter(i=>(!termo||`${i.descricao} ${i.bloco}`.toLocaleLowerCase("pt-BR").includes(termo))&&(!status||i.status===status));
+ const blocos=[...new Set(itens.map(i=>i.bloco||"Outras disciplinas"))];
+ formacaoItens.innerHTML=blocos.map(bloco=>`<section><h2 class="block-title">${formacaoEsc(bloco)}</h2><div class="formation-table-card table-responsive"><table class="table table-hover formation-table"><thead><tr><th>Disciplina</th><th>Tipo</th><th>Carga horária</th><th>Status</th></tr></thead><tbody>${itens.filter(i=>(i.bloco||"Outras disciplinas")===bloco).map(i=>`<tr><td class="formation-name">${formacaoEsc(i.descricao)}</td><td><span class="formation-type">${i.tipo==="OBRIGATORIA"?"Obrigatória":"Opcional"}</span></td><td>${i.cargaHoraria?`${i.cargaHoraria}h`:"—"}</td><td class="formation-status">${window.podeEditarFormacao?`<select class="form-select" data-disciplina="${i.id}">${Object.entries(statusFormacao).map(([v,r])=>`<option value="${v}" ${i.status===v?"selected":""}>${r}</option>`).join("")}</select>`:`<strong>${statusFormacao[i.status]}</strong>`}</td></tr>`).join("")}</tbody></table></div></section>`).join("")||'<div class="profile-card text-center text-muted py-5">Nenhuma disciplina encontrada.</div>';
+ formacaoItens.querySelectorAll("[data-disciplina]").forEach(s=>s.addEventListener("change",()=>salvarStatus(s)));
+}
+async function carregarFormacao(){
+ const r=await fetch(`formacao_api.jsp?acao=disciplinas&programa=${encodeURIComponent(window.formacaoProgramaId)}&pessoa=${encodeURIComponent(window.formacaoPessoaId)}`,{cache:"no-store"}),d=await r.json();if(!r.ok||!d.ok)throw new Error(d.mensagem||"Erro ao carregar programa.");dadosFormacao=d;
+ formacaoPrograma.textContent=d.programa.nome;formacaoPessoa.textContent=`${d.pessoaNome}${d.programa.dataInicio?` · Início do programa: ${d.programa.dataInicio}`:""}`;formacaoStatusPrograma.textContent=d.programa.status==="ATIVO"?"Ativo":"Inativo";formacaoStatusPrograma.className=`badge ${d.programa.status==="ATIVO"?"text-bg-success":"text-bg-secondary"}`;formacaoPercentual.textContent=`${d.percentual}%`;formacaoBarra.style.width=`${d.percentual}%`;formacaoObrigatorias.textContent=d.obrigatorias;formacaoOpcionais.textContent=d.opcionais;formacaoConcluidas.textContent=d.concluidas;formacaoAndamento.textContent=d.emAndamento;renderFormacao();
+}
+async function salvarStatus(select){
+ select.disabled=true;try{const r=await fetch("formacao_api.jsp?acao=salvarProgresso",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:new URLSearchParams({pessoa:window.formacaoPessoaId,disciplina:select.dataset.disciplina,status:select.value})}),d=await r.json();if(!r.ok||!d.ok)throw new Error(d.mensagem||"Erro ao atualizar.");await carregarFormacao();}catch(e){alert(e.message);await carregarFormacao();}
+}
+pesquisaFormacao.addEventListener("input",renderFormacao);filtroFormacaoStatus.addEventListener("change",renderFormacao);carregarFormacao().catch(e=>formacaoItens.innerHTML=`<div class="alert alert-danger">${formacaoEsc(e.message)}</div>`);

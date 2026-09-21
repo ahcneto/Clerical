@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    <xsql:query connection="cad">
+        SELECT
+            COUNT(CASE WHEN Classe = 1 THEN 1 END) AS diaconos,
+            COUNT(CASE WHEN Classe = 2 THEN 1 END) AS candidatos,
+            COUNT(CASE WHEN Classe = 3 THEN 1 END) AS vocacionados
+        FROM sqlPessoas
+        WHERE status = 1
+    </xsql:query>
+</SQL>

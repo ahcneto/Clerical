@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="RelListagemPorRegiaoNovo.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+    <xsql:include-request-params/>
+
+    <xsql:query rowset-element="REGIOES" row-element="REGIAO">
+        SELECT IdRegiao, Regiao
+          FROM tmp_regiao
+         ORDER BY Regiao
+    </xsql:query>
+
+    <xsql:query>
+        SELECT r.IdRegiao,
+               r.Regiao,
+               r.IdParoquia,
+               r.Descricao AS Paroquia,
+               r.Cidade,
+               r.Bairro,
+               p.Nome,
+               DATE_FORMAT(p.DtNascimento, '%d/%m/%Y') AS DtNascimento,
+               TIMESTAMPDIFF(YEAR, p.DtNascimento, CURDATE()) AS Idade
+          FROM pessoas p
+          JOIN paroquia r ON r.IdParoquia = p.IdParoquia
+         WHERE p.Status = 1
+           AND p.Classe = IFNULL(NULLIF('{@classe}', ''), 1)
+           AND (r.IdRegiao = IFNULL(NULLIF('{@regiao}', ''), 0)
+                OR IFNULL(NULLIF('{@regiao}', ''), 0) = 0)
+         ORDER BY r.Regiao, r.Descricao, p.Nome
+    </xsql:query>
+</SQL>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="RelMapaPresenca.xsl"?>
+
+<SQL connection="cad" xmlns:xsql="urn:oracle-xsql">
+  <xsql:include-request-params/>
+  
+    <xsql:query connection="cad" rowset-element="Anos" row-element="Ano">
+    SELECT distinct YEAR(DtEncontro) as Ano FROM Encontros
+  </xsql:query>
+  
+<xsql:query connection="cad" rowset-element="DATAS" row-element="DATA">
+  SELECT 
+        distinct 
+        DATE_FORMAT(e.DtEncontro , '%d.%b') AS DataFormatada,
+        YEAR(e.DtEncontro) AS Ano,
+        DATE_FORMAT(e.DtEncontro, '%Y-%m-%d') AS DataCompleta
+            
+      FROM 
+        pessoas p JOIN Encontros e ON p.Classe = e.Classe 
+      LEFT JOIN participanteEncontro pe 
+          ON p.IdPessoa = pe.IdPessoa AND e.IdEncontro = pe.IdEncontro
+          where e.Checklist = 0 
+		  and p.Classe = {@classe}
+		  AND (YEAR(e.DtEncontro) = {@Ano} OR {@Ano} = 0)
+      ORDER BY 
+        e.DtEncontro
+  </xsql:query>   
+
+    <!-- Listar participantes do Encontro -->
+    <xsql:query connection="cad">
+        SELECT 
+        p.Classe, 
+		p.IdPessoa,
+        p.Nome as Nome,
+        e.IdEncontro,
+        DATE_FORMAT(e.DtEncontro , '%d.%b') AS DataFormatada,
+        YEAR(e.DtEncontro) AS Ano,
+        DATE_FORMAT(e.DtEncontro, '%Y-%m-%d') AS DataCompleta,
+		 ifnull(pe.flgPresenca,0) as flgPresenca
+      FROM 
+        pessoas p JOIN Encontros e ON p.Classe = e.Classe 
+      LEFT JOIN participanteEncontro pe 
+          ON p.IdPessoa = pe.IdPessoa AND e.IdEncontro = pe.IdEncontro
+	WHERE  e.Checklist = 0 
+		and p.Status = 1
+ 		and 	p.Classe = {@classe}	
+		 AND (YEAR(e.DtEncontro) = {@Ano} OR {@Ano} = 0)		
+      ORDER BY 
+        p.Nome, e.DtEncontro
+    </xsql:query>
+
+ 
+  
+
+</SQL>
