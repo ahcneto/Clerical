@@ -16,7 +16,7 @@ int anoMp=imp(request.getParameter("ano"),0),regiaoMp=imp(request.getParameter("
 int participacaoMinMp=Math.max(0,Math.min(100,imp(request.getParameter("participacaoMin"),0)));
 int participacaoMaxMp=Math.max(participacaoMinMp,Math.min(100,imp(request.getParameter("participacaoMax"),100)));
 class EncontroMp{int id;String data,descricao;}
-class PessoaMp{int id;String nome,regiao,paroquia;Map<Integer,Integer> status=new HashMap<Integer,Integer>();Map<Integer,String> justificativas=new HashMap<Integer,String>();int presentes=0;}
+class PessoaMp{int id;Integer idade;String nome,regiao,paroquia,profissao,bairro;Map<Integer,Integer> status=new HashMap<Integer,Integer>();Map<Integer,String> justificativas=new HashMap<Integer,String>();int presentes=0;}
 List<Integer> anosMp=new ArrayList<Integer>();List<EncontroMp> encontrosMp=new ArrayList<EncontroMp>();List<PessoaMp> pessoasMp=new ArrayList<PessoaMp>();LinkedHashMap<Integer,String> regioesMp=new LinkedHashMap<Integer,String>();String erroMp=null,nomeRegiaoMp="";
 int totalPresentesMp=0,totalJustificadosMp=0,totalAusentesMp=0;
 try{
@@ -25,9 +25,9 @@ try{
   if(anoMp==0)anoMp=anosMp.isEmpty()?Year.now().getValue():anosMp.get(0);
   try(PreparedStatement p=c.prepareStatement("SELECT DISTINCT IdRegiao,Regiao FROM paroquia WHERE IdRegiao IS NOT NULL AND Regiao IS NOT NULL AND Regiao<>'' ORDER BY Regiao");ResultSet r=p.executeQuery()){while(r.next()){int id=r.getInt(1);String nome=r.getString(2);if(!restringeRegiaoMp||id==regiaoMp)regioesMp.put(id,nome);if(id==regiaoMp)nomeRegiaoMp=nome;}}
   try(PreparedStatement p=c.prepareStatement("SELECT IdEncontro,DATE_FORMAT(DtEncontro,'%d/%m') DataFormatada,IFNULL(Descricao,'') Descricao FROM Encontros WHERE Checklist=0 AND Classe=? AND YEAR(DtEncontro)=? AND DtEncontro<=CURDATE() ORDER BY DtEncontro,IdEncontro")){p.setInt(1,classeMp);p.setInt(2,anoMp);try(ResultSet r=p.executeQuery()){while(r.next()){EncontroMp x=new EncontroMp();x.id=r.getInt(1);x.data=r.getString(2);x.descricao=r.getString(3);encontrosMp.add(x);}}}
-  String sql="SELECT p.IdPessoa,p.Nome,IFNULL(pa.Regiao,'') Regiao,IFNULL(pa.Descricao,'') Paroquia,e.IdEncontro,IFNULL(pe.flgPresenca,0) flgPresenca,pe.Justificativa FROM pessoas p JOIN grupos g ON g.IdGrupo=p.Classe AND g.StatusGrupo='ATIVO' AND g.GrupoOperacional=1 AND g.ModuloPresencas=1 LEFT JOIN paroquia pa ON pa.IdParoquia=p.IdParoquia JOIN Encontros e ON e.Classe=p.Classe AND e.Checklist=0 AND YEAR(e.DtEncontro)=? AND e.DtEncontro<=CURDATE() LEFT JOIN participanteEncontro pe ON pe.IdPessoa=p.IdPessoa AND pe.IdEncontro=e.IdEncontro WHERE p.Status=1 AND p.Classe=? AND (?=0 OR IFNULL(pa.IdRegiao,0)=?) ORDER BY p.Nome,e.DtEncontro,e.IdEncontro";
+  String sql="SELECT p.IdPessoa,p.Nome,CASE WHEN p.DtNascimento IS NOT NULL AND p.DtNascimento>'0000-00-00' AND p.DtNascimento<=CURDATE() THEN TIMESTAMPDIFF(YEAR,p.DtNascimento,CURDATE()) ELSE NULL END Idade,IFNULL(p.Profissao,'') Profissao,IFNULL(pa.Bairro,'') Bairro,IFNULL(pa.Regiao,'') Regiao,IFNULL(pa.Descricao,'') Paroquia,e.IdEncontro,IFNULL(pe.flgPresenca,0) flgPresenca,pe.Justificativa FROM pessoas p JOIN grupos g ON g.IdGrupo=p.Classe AND g.StatusGrupo='ATIVO' AND g.GrupoOperacional=1 AND g.ModuloPresencas=1 LEFT JOIN paroquia pa ON pa.IdParoquia=p.IdParoquia JOIN Encontros e ON e.Classe=p.Classe AND e.Checklist=0 AND YEAR(e.DtEncontro)=? AND e.DtEncontro<=CURDATE() LEFT JOIN participanteEncontro pe ON pe.IdPessoa=p.IdPessoa AND pe.IdEncontro=e.IdEncontro WHERE p.Status=1 AND p.Classe=? AND (?=0 OR IFNULL(pa.IdRegiao,0)=?) ORDER BY p.Nome,e.DtEncontro,e.IdEncontro";
   LinkedHashMap<Integer,PessoaMp> mapa=new LinkedHashMap<Integer,PessoaMp>();
-  try(PreparedStatement p=c.prepareStatement(sql)){p.setInt(1,anoMp);p.setInt(2,classeMp);p.setInt(3,regiaoMp);p.setInt(4,regiaoMp);try(ResultSet r=p.executeQuery()){while(r.next()){int id=r.getInt("IdPessoa");PessoaMp pessoa=mapa.get(id);if(pessoa==null){pessoa=new PessoaMp();pessoa.id=id;pessoa.nome=r.getString("Nome");pessoa.regiao=r.getString("Regiao");pessoa.paroquia=r.getString("Paroquia");mapa.put(id,pessoa);}int status=r.getInt("flgPresenca");pessoa.status.put(r.getInt("IdEncontro"),status);pessoa.justificativas.put(r.getInt("IdEncontro"),r.getString("Justificativa"));if(status==1)pessoa.presentes++;}}}
+  try(PreparedStatement p=c.prepareStatement(sql)){p.setInt(1,anoMp);p.setInt(2,classeMp);p.setInt(3,regiaoMp);p.setInt(4,regiaoMp);try(ResultSet r=p.executeQuery()){while(r.next()){int id=r.getInt("IdPessoa");PessoaMp pessoa=mapa.get(id);if(pessoa==null){pessoa=new PessoaMp();pessoa.id=id;pessoa.nome=r.getString("Nome");pessoa.regiao=r.getString("Regiao");pessoa.paroquia=r.getString("Paroquia");pessoa.profissao=r.getString("Profissao");int idade=r.getInt("Idade");pessoa.idade=r.wasNull()?null:Integer.valueOf(idade);pessoa.bairro=r.getString("Bairro");mapa.put(id,pessoa);}int status=r.getInt("flgPresenca");pessoa.status.put(r.getInt("IdEncontro"),status);pessoa.justificativas.put(r.getInt("IdEncontro"),r.getString("Justificativa"));if(status==1)pessoa.presentes++;}}}
   for(PessoaMp pessoa:mapa.values()){
    double percentual=encontrosMp.isEmpty()?0:pessoa.presentes*100.0/encontrosMp.size();
    if(percentual<participacaoMinMp||percentual>participacaoMaxMp)continue;
@@ -50,7 +50,23 @@ int totalRegistrosMp=totalPresentesMp+totalJustificadosMp+totalAusentesMp;
 <section class="profile-card p-0 overflow-hidden"><div class="d-flex justify-content-between align-items-center p-3 border-bottom"><h4 class="mb-0">Participação por encontro</h4><div class="map-legend"><span><b class="text-success">P</b> Presente</span><span><b class="text-warning">J</b> Justificado</span><span><b class="text-danger">F</b> Ausente</span></div></div><% if(pessoasMp.isEmpty()||encontrosMp.isEmpty()){ %><div class="text-center text-muted py-5"><i class="bi bi-calendar-x fs-1 d-block mb-2"></i>Nenhuma informação encontrada para os filtros selecionados.</div><% }else{ %><div class="attendance-wrap"><table class="table table-hover attendance-table"><thead><tr><th class="name-col">Nome</th><th>Paróquia</th><th class="percent-col">Participação</th><% for(EncontroMp e:encontrosMp){ %><th title="<%= hmp(e.descricao) %>"><%= hmp(e.data) %></th><% } %></tr></thead><tbody><% for(PessoaMp pessoa:pessoasMp){double pct=encontrosMp.isEmpty()?0:pessoa.presentes*100.0/encontrosMp.size(); %><tr><td class="name-col"><%= hmp(pessoa.nome) %></td><td><%= hmp(pessoa.paroquia==null||pessoa.paroquia.isEmpty()?"—":pessoa.paroquia) %></td><td class="percent-col"><strong><%= String.format(java.util.Locale.forLanguageTag("pt-BR"),"%.1f",pct) %>%</strong><small class="d-block text-muted"><%= pessoa.presentes %>/<%= encontrosMp.size() %></small></td><% for(EncontroMp e:encontrosMp){int st=pessoa.status.containsKey(e.id)?pessoa.status.get(e.id):0; %><td><button type="button" class="status-map border-0 <%= st==1?"status-p":st==2?"status-j":"status-f" %>" data-bs-toggle="offcanvas" data-bs-target="#detalhesPresencaMp" data-pessoa="<%= pessoa.id %>" data-encontro="<%= e.id %>" aria-controls="detalhesPresencaMp" aria-label="Ver registros de <%= hmp(pessoa.nome) %>, <%= hmp(e.data) %>: <%= st==1?"Presente":st==2?"Justificado":"Ausente" %>" title="Ver registros e justificativas"><%= st==1?"P":st==2?"J":"F" %></button></td><% } %></tr><% } %></tbody></table></div><% } %></section>
 <% for(PessoaMp pessoa:pessoasMp){ %>
 <template id="registros-mp-<%= pessoa.id %>">
-<div class="mb-3"><h3 class="h5"><%= hmp(pessoa.nome) %></h3><p class="text-muted mb-1"><%= hmp(pessoa.paroquia) %></p><p class="small text-muted">Registros do ano <%= anoMp %> · <%= encontrosMp.size() %> encontros</p></div>
+<div class="mp-member-summary mb-3">
+<div class="d-flex align-items-center gap-3 mb-3">
+<div class="mp-photo-wrap">
+<button type="button" class="mp-photo-button" aria-label="Ampliar foto de <%= hmp(pessoa.nome) %>" title="Clique para ampliar" onclick="ampliarFotoMp(this)">
+<img class="mp-member-photo" src="fotos/foto_<%= pessoa.id %>.jpg" alt="Foto de <%= hmp(pessoa.nome) %>" onerror="this.parentElement.hidden=true;this.parentElement.nextElementSibling.hidden=false;">
+</button>
+<div class="mp-photo-placeholder" hidden role="img" aria-label="Foto não disponível"><i class="bi bi-person" aria-hidden="true"></i></div>
+</div>
+<div class="mp-member-name"><h3 class="h5 mb-1"><%= hmp(pessoa.nome) %></h3><p class="text-muted mb-0">Profissão: <%= hmp(pessoa.profissao==null||pessoa.profissao.trim().isEmpty()?"Não informada":pessoa.profissao) %></p></div>
+</div>
+<p class="small mb-1"><strong>Idade:</strong> <%= pessoa.idade==null?"Não informada":pessoa.idade+" anos" %></p>
+<p class="small mb-1"><strong>Paróquia:</strong> <%= hmp(pessoa.paroquia==null||pessoa.paroquia.trim().isEmpty()?"Não informada":pessoa.paroquia) %></p>
+<p class="small mb-1"><strong>Bairro da paróquia:</strong> <%= hmp(pessoa.bairro==null||pessoa.bairro.trim().isEmpty()?"Não informado":pessoa.bairro) %></p>
+<p class="small mb-3"><strong>Região da paróquia:</strong> <%= hmp(pessoa.regiao==null||pessoa.regiao.trim().isEmpty()?"Não informada":pessoa.regiao) %></p>
+<p class="small text-muted mb-1">Registros do ano <%= anoMp %></p>
+<p class="mb-0"><strong>Participou de <%= pessoa.presentes %> de <%= encontrosMp.size() %> encontros realizados.</strong></p>
+</div>
 <div class="list-group">
 <% for(EncontroMp e:encontrosMp){int st=pessoa.status.containsKey(e.id)?pessoa.status.get(e.id):0;String justificativa=pessoa.justificativas.get(e.id); %>
 <article class="list-group-item p-3" data-registro-encontro="<%= e.id %>">
@@ -64,14 +80,18 @@ int totalRegistrosMp=totalPresentesMp+totalJustificadosMp+totalAusentesMp;
 <div class="offcanvas offcanvas-end no-print" tabindex="-1" id="detalhesPresencaMp" aria-labelledby="tituloDetalhesMp" style="--bs-offcanvas-width:560px">
 <div class="offcanvas-header border-bottom"><h2 class="offcanvas-title h5" id="tituloDetalhesMp">Registros de presença</h2><button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button></div>
 <div class="px-3 py-2 border-bottom"><button type="button" class="btn btn-outline-secondary btn-sm" onclick="imprimirDetalhesMp()"><i class="bi bi-printer" aria-hidden="true"></i> Imprimir registros</button></div>
-<div class="offcanvas-body" id="conteudoDetalhesMp"></div>
+<div class="offcanvas-body" id="conteudoDetalhesMp"></div><dialog id="fotoAmpliadaMp" class="mp-photo-dialog no-print" aria-labelledby="tituloFotoMp">
+<div class="d-flex justify-content-between align-items-center gap-3 mb-3"><h2 id="tituloFotoMp" class="h5 mb-0"></h2><button type="button" class="btn-close flex-shrink-0" aria-label="Fechar foto ampliada" autofocus onclick="document.getElementById('fotoAmpliadaMp').close()"></button></div>
+<img id="imagemAmpliadaMp" alt="">
+</dialog>
 </div>
-<style>.mp-justificativa{white-space:pre-wrap;overflow-wrap:anywhere}.mp-registro-selecionado{border-left:4px solid #fd7e14;background:#fff7ed}.status-map:focus-visible{outline:3px solid #0d6efd;outline-offset:2px}@media print{.offcanvas-backdrop{display:none!important}}</style></main><style>
+<style>.mp-photo-button{border:0;padding:0;background:transparent;border-radius:50%;cursor:zoom-in}.mp-photo-button:focus-visible{outline:3px solid #0d6efd;outline-offset:3px}.mp-photo-dialog{border:0;border-radius:16px;padding:20px;width:min(680px,92vw);max-height:90vh;overflow:auto}.mp-photo-dialog::backdrop{background:rgba(0,0,0,.7)}#imagemAmpliadaMp{display:block;width:100%;max-height:72vh;object-fit:contain}.mp-photo-wrap{width:80px;height:80px;flex-shrink:0}.mp-member-photo,.mp-photo-placeholder{width:80px;height:80px;border-radius:50%;object-fit:cover}.mp-photo-placeholder:not([hidden]){display:grid;place-items:center;background:#e2e8f0;color:#64748b;font-size:36px}.mp-member-name{min-width:0;overflow-wrap:anywhere}.mp-member-summary{break-inside:avoid}.mp-justificativa{white-space:pre-wrap;overflow-wrap:anywhere}.mp-registro-selecionado{border-left:4px solid #fd7e14;background:#fff7ed}.status-map:focus-visible{outline:3px solid #0d6efd;outline-offset:2px}@media print{.offcanvas-backdrop{display:none!important}}</style></main><style>
 #impressaoDetalhesMp{display:none}
 @media print{
  body.print-member-details{overflow:visible!important;padding-right:0!important}
  body.print-member-details> :not(#impressaoDetalhesMp){display:none!important}
- body.print-member-details #impressaoDetalhesMp{display:block!important;color:#000;font-size:11pt}
+ @page detalhesPresencaMp{size:A4 portrait;margin:12mm}
+ body.print-member-details #impressaoDetalhesMp{page:detalhesPresencaMp;display:block!important;color:#000;font-size:11pt}
  #impressaoDetalhesMp .list-group{display:block}
  #impressaoDetalhesMp .list-group-item{break-inside:avoid;border:1px solid #bbb;margin-bottom:8px;overflow-wrap:anywhere}
  #impressaoDetalhesMp .badge{color:#000!important;border:1px solid #777;white-space:normal}
@@ -79,7 +99,23 @@ int totalRegistrosMp=totalPresentesMp+totalJustificadosMp+totalAusentesMp;
 }
 </style>
 <section id="impressaoDetalhesMp" aria-hidden="true"></section><jsp:include page="includes/footer.jsp"/><script>const painelMp=document.getElementById('detalhesPresencaMp');
-painelMp.addEventListener('show.bs.offcanvas',function(event){
+const fotoDialogMp=document.getElementById('fotoAmpliadaMp');
+function ampliarFotoMp(botao){
+ const foto=botao.querySelector('img');
+ if(!foto||!foto.complete||!foto.naturalWidth)return;
+ const ampliada=document.getElementById('imagemAmpliadaMp');
+ ampliada.src=foto.currentSrc||foto.src;
+ ampliada.alt=foto.alt;
+ document.getElementById('tituloFotoMp').textContent=foto.alt;
+ fotoDialogMp.showModal();
+}
+fotoDialogMp.addEventListener('keydown',function(event){if(event.key==='Escape')event.stopPropagation();});
+fotoDialogMp.addEventListener('click',function(event){
+ if(event.target!==fotoDialogMp)return;
+ const limites=fotoDialogMp.getBoundingClientRect();
+ if(event.clientX<limites.left||event.clientX>limites.right||event.clientY<limites.top||event.clientY>limites.bottom)fotoDialogMp.close();
+});
+painelMp.addEventListener('hide.bs.offcanvas',function(){if(fotoDialogMp.open)fotoDialogMp.close();});painelMp.addEventListener('show.bs.offcanvas',function(event){
  const botao=event.relatedTarget;
  if(!botao)return;
  const modelo=document.getElementById('registros-mp-'+botao.dataset.pessoa);

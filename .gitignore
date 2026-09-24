@@ -39,3 +39,8 @@
 /.vscode/
 Thumbs.db
 .DS_Store
+# Chaves SSH e dados locais do servidor
+/chave/
+/data/
+id_rsa*
+id_ed25519*

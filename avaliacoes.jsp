@@ -8,7 +8,7 @@
     <title>Avaliações</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/avaliacoes.css">
+    <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/avaliacoes.css?v=20260923-photo">
 </head>
 <body>
 <jsp:include page="includes/header.jsp"/>
@@ -98,8 +98,14 @@
         </div>
     </div>
 </div></div></div>
+<div class="modal fade" id="modalFotoAvaliado" tabindex="-1" aria-labelledby="tituloFotoAvaliado" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title" id="tituloFotoAvaliado">Foto do avaliado</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar foto ampliada"></button></div>
+        <div class="modal-body text-center"><img id="fotoAvaliadoAmpliada" class="evaluation-photo-expanded" alt=""></div>
+    </div></div>
+</div>
 <jsp:include page="includes/footer.jsp"/>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>window.avaliacoesSomenteLeitura=<%= "EXT".equals((String)session.getAttribute("usuarioPerfil")) %>;</script>
-<script src="js/avaliacoes.js?v=20260729-13"></script>
+<script src="js/avaliacoes.js?v=20260923-photo"></script>
 </body></html>

@@ -863,3 +863,32 @@ document.getElementById("paroquiasContainer").addEventListener("click", event =>
     if (!card) return;
     selecionarParoquia(paroquiasExibidas[Number(card.dataset.selecionarParoquia)]);
 });
+
+// Ampliação da foto atual, incluindo fotos recém-atualizadas.
+(() => {
+    const foto = document.getElementById("profileFoto");
+    const elementoModal = document.getElementById("modalFotoPerfil");
+    if (!foto || !elementoModal) return;
+    const modalFoto = new bootstrap.Modal(elementoModal);
+    function ampliarFoto() {
+        if (!foto.complete || !foto.naturalWidth || foto.style.display === "none") return;
+        const nome = document.getElementById("profileNome").textContent.trim();
+        const titulo = nome ? `Foto de ${nome}` : "Foto do perfil";
+        const ampliada = document.getElementById("fotoPerfilAmpliada");
+        ampliada.src = foto.currentSrc || foto.src;
+        ampliada.alt = titulo;
+        document.getElementById("tituloFotoPerfil").textContent = titulo;
+        modalFoto.show();
+    }
+    foto.addEventListener("click", ampliarFoto);
+    foto.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            ampliarFoto();
+        }
+    });
+    elementoModal.addEventListener("hidden.bs.modal", () => {
+        document.getElementById("fotoPerfilAmpliada").removeAttribute("src");
+        foto.focus();
+    });
+})();

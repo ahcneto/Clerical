@@ -58,7 +58,7 @@ if (paramId != null && !paramId.isEmpty()) {
             <img id="profileFoto"
                  src="fotos/foto_<%= perfilId %>.jpg"
                  alt="Foto Perfil"
-                 class="profile-photo"
+                 class="profile-photo" role="button" tabindex="0" aria-label="Ampliar foto do perfil" aria-haspopup="dialog" aria-controls="modalFotoPerfil" title="Clique para ampliar"
                  onerror="this.style.display='none'; document.getElementById('profileAvatar').style.display='flex';">
 
             <div id="profileAvatar" class="profile-avatar" style="display:none;">
@@ -663,13 +663,23 @@ if (paramId != null && !paramId.isEmpty()) {
     </div>
 </div>
 
+<style>
+#profileFoto{cursor:zoom-in}
+#profileFoto:focus-visible{outline:3px solid #0d6efd;outline-offset:4px}
+#fotoPerfilAmpliada{display:block;width:100%;max-height:75vh;object-fit:contain}
+</style>
+<div class="modal fade" id="modalFotoPerfil" tabindex="-1" aria-labelledby="tituloFotoPerfil" aria-hidden="true">
+<div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5 class="modal-title" id="tituloFotoPerfil">Foto do perfil</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar foto ampliada"></button></div>
+<div class="modal-body text-center"><img id="fotoPerfilAmpliada" alt=""></div>
+</div></div></div>
 <jsp:include page="includes/footer.jsp"/>
 
 <script>
 window.perfilId = <%= perfilId %>;
 window.usuarioPerfil = "<%= usuarioPerfil %>";
 </script>
-<script src="js/profile.js?v=20260824-2"></script>
+<script src="js/profile.js?v=20260923-photo"></script>
 
 </body>
 </html>

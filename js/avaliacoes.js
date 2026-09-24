@@ -3,6 +3,24 @@
     const $ = id => document.getElementById(id);
     const modal = new bootstrap.Modal($("modalCiclo"));
     const modalIndicadores = new bootstrap.Modal($("modalIndicadores"));
+    const modalFoto = new bootstrap.Modal($("modalFotoAvaliado"));
+    let botaoFotoOrigem = null;
+    $("pessoaCabecalho").addEventListener("click", event => {
+        const botao = event.target.closest(".evaluation-photo-button");
+        if (!botao) return;
+        const foto = botao.querySelector("img");
+        if (!foto.complete || !foto.naturalWidth) return;
+        botaoFotoOrigem = botao;
+        $("fotoAvaliadoAmpliada").src = foto.currentSrc || foto.src;
+        $("fotoAvaliadoAmpliada").alt = foto.alt;
+        $("tituloFotoAvaliado").textContent = foto.alt;
+        modalFoto.show();
+    });
+    $("modalFotoAvaliado").addEventListener("hidden.bs.modal", () => {
+        $("fotoAvaliadoAmpliada").removeAttribute("src");
+        if (botaoFotoOrigem && botaoFotoOrigem.isConnected) botaoFotoOrigem.focus();
+        botaoFotoOrigem = null;
+    });
     const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" })[char]);
     const grupoTag = () => "";
 
@@ -127,7 +145,9 @@
             const ministerial = data.pessoa.ministerial;
             const indicador = (rotulo, valor) => `<div class="ministerial-item"><i class="bi ${valor ? "bi-check-circle-fill text-success" : "bi-dash-circle text-secondary"}"></i><span>${esc(rotulo)}</span></div>`;
             $("pessoaCabecalho").innerHTML = `<div class="d-flex align-items-center gap-4 flex-wrap">
-                <img src="fotos/foto_${data.pessoa.id}.jpg" class="evaluation-person-photo" alt="Foto de ${esc(data.pessoa.nome)}" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')">
+                <button type="button" class="evaluation-photo-button" title="Clique para ampliar" aria-label="Ampliar foto de ${esc(data.pessoa.nome)}">
+                    <img src="fotos/foto_${data.pessoa.id}.jpg" class="evaluation-person-photo" alt="Foto de ${esc(data.pessoa.nome)}" onerror="this.parentElement.classList.add('d-none');this.parentElement.nextElementSibling.classList.remove('d-none')">
+                </button>
                 <span class="evaluation-avatar d-none" style="width:108px;height:108px;font-size:2rem">${esc(data.pessoa.nome.charAt(0))}</span>
                 <div><h2 class="fw-bold mb-2">${esc(data.pessoa.nome)}</h2>
                 <div class="person-detail-lines text-muted">

@@ -13,3 +13,7 @@
 .pastoral-line{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:14px 2px}.pastoral-line i{color:#8b5a20;font-size:1.15rem}.indicator-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc;text-align:left;color:#334155}.indicator-summary:hover{border-color:#c96a0a;background:#fffaf5}.indicator-summary strong{font-size:1.8rem;color:#8b5a20}.detail-section{border:1px solid #e5e7eb;border-radius:14px;padding:18px}.indicator-percent{font-size:1.35rem;font-weight:700;color:#8b5a20}.status-present{color:#15803d;font-weight:700}.status-absent{color:#b91c1c;font-weight:700}.status-justified{color:#b45309;font-weight:700}
 .person-detail-lines{display:flex;flex-direction:column;gap:7px}.person-detail-lines>div{display:flex;align-items:flex-start;gap:9px}.person-detail-lines i{width:18px;flex:0 0 18px;color:#8b5a20;text-align:center}
 @media(max-width:576px){.evaluation-panel{padding:18px}.evaluation-person-photo{width:86px;height:86px}}
+
+.evaluation-photo-button{border:0;padding:0;background:transparent;border-radius:50%;cursor:zoom-in;flex-shrink:0}
+.evaluation-photo-button:focus-visible{outline:3px solid #0d6efd;outline-offset:4px}
+.evaluation-photo-expanded{display:block;width:100%;max-height:75vh;object-fit:contain}
