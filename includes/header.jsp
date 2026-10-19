@@ -111,6 +111,7 @@ String tituloCabecalhoFixo = "Clerical";
         <% } %>
 
         <% if ("ADM".equals(perfil)) { %>
+        <li class="nav-item"><a class="nav-link" href="paroquias.jsp"><i class="bi bi-building"></i> Paróquias</a></li>
         <li class="nav-item">
             <a class="nav-link" href="usuarios.jsp">
                 <i class="bi bi-shield-lock"></i> Usuários

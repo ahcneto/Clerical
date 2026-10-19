@@ -31,6 +31,10 @@ if (pagina.contains("usuarios.jsp") || pagina.contains("grupos.jsp")) {
     permitido = "ADM".equals(perfil);
 }
 
+if (pagina.contains("paroquias.jsp")) {
+    permitido = "ADM".equals(perfil);
+}
+
 if (!permitido) {
     response.sendRedirect("index.jsp");
     return;
