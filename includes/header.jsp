@@ -22,7 +22,19 @@ body.admin-menu-expanded .admin-sidebar { width: 15rem; }
 .admin-sidebar a i { width: 1.35rem; text-align: center; font-size: 1.1rem; }
 .admin-sidebar-label { display: none; }
 body.admin-menu-expanded .admin-sidebar-label { display: inline; }
-@media (max-width: 991px) { body { padding-left: 0; } .admin-sidebar { top: 64px; } }
+.admin-mobile-toggle { display: none; }
+.admin-menu-backdrop { display: none; }
+@media (max-width: 991px) {
+    body { padding-left: 0; }
+    .admin-mobile-toggle { display: inline-flex; align-items: center; justify-content: center; }
+    .admin-sidebar { top: 56px; bottom: 0; width: 15rem; transform: translateX(-100%); transition: transform .2s ease; }
+    body.admin-menu-expanded .admin-sidebar { width: 15rem; }
+    .admin-sidebar-label, body.admin-menu-expanded .admin-sidebar-label { display: inline; }
+    .admin-sidebar-toggle { display: none; }
+    body.admin-menu-mobile-open .admin-sidebar { transform: translateX(0); }
+    .admin-menu-backdrop { position: fixed; z-index: 1039; inset: 56px 0 0; border: 0; background: rgba(15,23,42,.35); }
+    body.admin-menu-mobile-open .admin-menu-backdrop { display: block; }
+}
 @media (max-width: 991px) {
     #mainMenu.navbar-collapse {
         background: #ffffff !important;
@@ -46,6 +58,11 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
             <i class="bi bi-bank"></i> <%= tituloCabecalhoFixo %>
         </a>
 
+        <% if (!"USR".equals(perfil)) { %>
+        <button id="adminMenuMobileToggle" class="admin-mobile-toggle btn btn-outline-secondary me-2" type="button" onclick="toggleAdminMenu()" aria-label="Abrir menu administrativo" aria-controls="adminSidebar" aria-expanded="false" title="Menu administrativo">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
+        <% } %>
         <button class="navbar-toggler" type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#mainMenu">
@@ -122,7 +139,7 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
         </div>
     </div>
 </nav>
-<aside class="admin-sidebar" aria-label="Menu administrativo">
+<aside id="adminSidebar" class="admin-sidebar" aria-label="Menu administrativo">
     <button class="admin-sidebar-toggle" type="button" onclick="toggleAdminMenu()" aria-label="Expandir ou recolher menu administrativo" title="Expandir ou recolher menu"><i class="bi bi-layout-sidebar-inset"></i><span class="admin-sidebar-label ms-2">Menu administrativo</span></button>
     <ul>
         <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="membros.jsp" title="Membros"><i class="bi bi-people"></i><span class="admin-sidebar-label">Membros</span></a></li><% } %>
@@ -133,7 +150,8 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
         <% if ("ADM".equals(perfil)) { %><li><a href="paroquias.jsp" title="Paróquias"><i class="bi bi-building"></i><span class="admin-sidebar-label">Paróquias</span></a></li><li><a href="usuarios.jsp" title="Usuários"><i class="bi bi-shield-lock"></i><span class="admin-sidebar-label">Usuários</span></a></li><% } %>
     </ul>
 </aside>
-<script>function toggleAdminMenu(){var aberto=document.body.classList.toggle('admin-menu-expanded');try{localStorage.setItem('adminMenuExpanded',aberto?'1':'0');}catch(e){}}(function(){try{if(localStorage.getItem('adminMenuExpanded')==='1')document.body.classList.add('admin-menu-expanded');}catch(e){}})();</script>
+<button class="admin-menu-backdrop" type="button" onclick="closeAdminMenu()" aria-label="Fechar menu administrativo"></button>
+<script>function toggleAdminMenu(){if(window.matchMedia("(max-width: 991px)").matches){var aberto=document.body.classList.toggle("admin-menu-mobile-open");var botao=document.getElementById("adminMenuMobileToggle");if(botao){botao.setAttribute("aria-expanded",aberto?"true":"false");botao.setAttribute("aria-label",aberto?"Fechar menu administrativo":"Abrir menu administrativo");}return;}var aberto=document.body.classList.toggle("admin-menu-expanded");try{localStorage.setItem("adminMenuExpanded",aberto?"1":"0");}catch(e){}}function closeAdminMenu(){document.body.classList.remove("admin-menu-mobile-open");var botao=document.getElementById("adminMenuMobileToggle");if(botao){botao.setAttribute("aria-expanded","false");botao.setAttribute("aria-label","Abrir menu administrativo");}}document.addEventListener("keydown",function(e){if(e.key==="Escape")closeAdminMenu();});(function(){try{if(localStorage.getItem("adminMenuExpanded")==="1")document.body.classList.add("admin-menu-expanded");}catch(e){}})();</script>
 <script>
 (function(){try{var contexto='<%= request.getContextPath() %>',caminho=location.pathname;if(contexto&&caminho.indexOf(contexto+'/')===0)caminho=caminho.substring(contexto.length+1);else caminho=caminho.replace(/^\/+/, '');if(!/\.(jsp|html)$/i.test(caminho))return;var dados='pagina='+encodeURIComponent(caminho)+'&titulo='+encodeURIComponent(document.title||'');fetch(contexto+'/registrarAcesso.jsp',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:dados,credentials:'same-origin',keepalive:true}).catch(function(){});}catch(e){}})();
 </script>
