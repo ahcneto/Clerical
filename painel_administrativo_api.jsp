@@ -51,6 +51,10 @@ try(Connection c=cad.db.Database.getConnection()){
     .append(",\"inadimplenciaHistoricaDisponivel\":").append(inadimplenciaHistoricaDisponivel).append(",\"inadimplentesHistoricos\":").append(inadimplentesHistoricos).append(",\"percentualInadimplenciaHistorica\":").append(percentualInadimplenciaHistorica).append('}');
   }
  }
+ int mesAniversarios=0;try(PreparedStatement pm=c.prepareStatement("SELECT MONTH(CURDATE())");ResultSet rm=pm.executeQuery()){if(rm.next())mesAniversarios=rm.getInt(1);}
+ json.append("],\"mes\":").append(mesAniversarios).append(",\"aniversariantes\":[");boolean primeiroAniversario=true;
+ String sqlAniversarios="SELECT p.Nome,g.NomePlural,g.Cor,DATE_FORMAT(p.DtNascimento,'%d/%m') DataAniversario,DAY(p.DtNascimento) Dia FROM pessoas p JOIN grupos g ON g.IdGrupo=p.Classe AND g.StatusGrupo='ATIVO' AND g.GrupoOperacional=1 AND g.ModuloMembros=1 WHERE p.Status=1 AND p.DtNascimento IS NOT NULL AND MONTH(p.DtNascimento)=? ORDER BY DAY(p.DtNascimento),p.Nome";
+ try(PreparedStatement pa=c.prepareStatement(sqlAniversarios)){pa.setInt(1,mesAniversarios);try(ResultSet ra=pa.executeQuery()){while(ra.next()){if(!primeiroAniversario)json.append(',');primeiroAniversario=false;json.append("{\"nome\":\"").append(jpa(ra.getString("Nome"))).append("\",\"grupo\":\"").append(jpa(ra.getString("NomePlural"))).append("\",\"cor\":\"").append(jpa(ra.getString("Cor"))).append("\",\"data\":\"").append(jpa(ra.getString("DataAniversario"))).append("\",\"dia\":").append(ra.getInt("Dia")).append('}');}}}
  out.print(json.append("]}"));
 }catch(Exception e){getServletContext().log("Erro ao carregar painel administrativo por grupo",e);response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);out.print("{\"ok\":false,\"mensagem\":\"Não foi possível carregar os indicadores dos grupos.\"}");}
 %>

@@ -44,12 +44,35 @@ function cartaoGrupoPainel(grupo) {
     </section></div>`;
 }
 
+function renderizarAniversariantes(aniversariantes, mes) {
+    const lista = document.getElementById("aniversariantesLista");
+    const total = document.getElementById("aniversariantesTotal");
+    const titulo = document.getElementById("aniversariantesTitulo");
+    const numeroMes = Number(mes);
+    const nomeMes = numeroMes >= 1 && numeroMes <= 12
+        ? new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(new Date(2020, numeroMes - 1, 1))
+        : "mês";
+    titulo.innerHTML = `<i class="bi bi-gift me-1"></i> Aniversariantes de ${textoSeguro(nomeMes)}`;
+    total.textContent = `${aniversariantes.length} membro(s)`;
+    lista.innerHTML = aniversariantes.length
+        ? aniversariantes.map(pessoa => {
+            const cor = /^#[0-9a-f]{6}$/i.test(pessoa.cor || "") ? pessoa.cor : "#64748b";
+            const dia = String(pessoa.dia || "").padStart(2, "0");
+            return `<div class="birthday-row">
+                <div class="birthday-date">${textoSeguro(dia)}<small>${textoSeguro(nomeMes.slice(0, 3))}</small></div>
+                <div class="birthday-name"><strong>${textoSeguro(pessoa.nome)}</strong></div>
+                <span class="badge rounded-pill birthday-group" style="--grupo-cor:${cor}">${textoSeguro(pessoa.grupo)}</span>
+            </div>`;
+        }).join("")
+        : '<div class="text-center text-muted py-4"><i class="bi bi-balloon me-1"></i>Não há aniversariantes neste mês.</div>';
+}
 async function carregarPainelAdministrativo() {
     const container = document.getElementById("painelGrupos");
     try {
         const resposta = await fetch("painel_administrativo_api.jsp", { cache: "no-store" });
         const dados = await resposta.json();
         if (!resposta.ok || !dados.ok) throw new Error(dados.mensagem || "Não foi possível carregar o painel.");
+        renderizarAniversariantes(dados.aniversariantes || [], dados.mes);
         container.innerHTML = dados.grupos.length
             ? dados.grupos.map(cartaoGrupoPainel).join("")
             : '<div class="col-12 text-muted">Nenhum grupo operacional ativo.</div>';
