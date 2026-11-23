@@ -43,10 +43,10 @@ try(Connection c=cad.db.Database.getConnection()){
     try(PreparedStatement ph=c.prepareStatement(qh)){ph.setInt(1,id);ph.setInt(2,id);try(ResultSet rh=ph.executeQuery()){if(rh.next())inadimplentesHistoricos=rh.getInt("Inadimplentes");}}
     percentualInadimplenciaHistorica=pctpa(inadimplentesHistoricos,membros);
    }
-       boolean formacao100Disponivel=false;int membrosFormacao100=0;long disciplinasObrigatoriasAtivas=0;
+       boolean formacao100Disponivel=false;int membrosFormacao100=0,membrosFormacaoAvaliados=0;long disciplinasObrigatoriasAtivas=0;
     if(moduloFormacao&&membros>0){
-     String qf="SELECT COALESCE(SUM(CASE WHEN x.Obrigatorias>0 AND x.Concluidas=x.Obrigatorias THEN 1 ELSE 0 END),0) Completas,COALESCE(SUM(x.Obrigatorias),0) TotalObrigatorias FROM (SELECT p.IdPessoa,COUNT(DISTINCT d.IdDisciplina) Obrigatorias,COUNT(DISTINCT CASE WHEN fp.StatusDisciplina='CONCLUIDA' THEN d.IdDisciplina END) Concluidas FROM sqlPessoas p LEFT JOIN formacao_programa_grupo pg ON pg.Classe=p.Classe LEFT JOIN formacao_programa pr ON pr.IdPrograma=pg.IdPrograma AND pr.StatusPrograma='ATIVO' LEFT JOIN formacao_disciplina d ON d.IdPrograma=pr.IdPrograma AND d.TipoDisciplina='OBRIGATORIA' LEFT JOIN formacao_pessoa_disciplina fp ON fp.IdPessoa=p.IdPessoa AND fp.IdDisciplina=d.IdDisciplina WHERE p.Classe=? AND p.status=1 GROUP BY p.IdPessoa) x";
-     try(PreparedStatement pf=c.prepareStatement(qf)){pf.setInt(1,id);try(ResultSet rf=pf.executeQuery()){if(rf.next()){membrosFormacao100=rf.getInt("Completas");disciplinasObrigatoriasAtivas=rf.getLong("TotalObrigatorias");}}}
+     String qf="SELECT COALESCE(SUM(CASE WHEN x.Obrigatorias>0 AND x.Concluidas=x.Obrigatorias THEN 1 ELSE 0 END),0) Completas,COALESCE(SUM(CASE WHEN x.Obrigatorias>0 THEN 1 ELSE 0 END),0) MembrosAvaliados,COALESCE(SUM(x.Obrigatorias),0) TotalObrigatorias FROM (SELECT p.IdPessoa,COUNT(DISTINCT d.IdDisciplina) Obrigatorias,COUNT(DISTINCT CASE WHEN fp.StatusDisciplina='CONCLUIDA' THEN d.IdDisciplina END) Concluidas FROM sqlPessoas p LEFT JOIN formacao_programa_grupo pg ON pg.Classe=p.Classe LEFT JOIN formacao_programa pr ON pr.IdPrograma=pg.IdPrograma AND pr.StatusPrograma='ATIVO' LEFT JOIN formacao_disciplina d ON d.IdPrograma=pr.IdPrograma AND d.TipoDisciplina='OBRIGATORIA' LEFT JOIN formacao_pessoa_disciplina fp ON fp.IdPessoa=p.IdPessoa AND fp.IdDisciplina=d.IdDisciplina WHERE p.Classe=? AND p.status=1 GROUP BY p.IdPessoa) x";
+     try(PreparedStatement pf=c.prepareStatement(qf)){pf.setInt(1,id);try(ResultSet rf=pf.executeQuery()){if(rf.next()){membrosFormacao100=rf.getInt("Completas");disciplinasObrigatoriasAtivas=rf.getLong("TotalObrigatorias");membrosFormacaoAvaliados=rf.getInt("MembrosAvaliados");}}}
      formacao100Disponivel=disciplinasObrigatoriasAtivas>0;
     }
     boolean presencaAbaixo50Disponivel=false;int membrosAbaixo50=0,membrosAvaliadosPresenca=0;
@@ -61,14 +61,19 @@ try(Connection c=cad.db.Database.getConnection()){
     .append(",\"presencaDisponivel\":").append(presencaDisponivel).append(",\"presentes\":").append(presentes).append(",\"percentualPresenca\":").append(percentualPresenca)
     .append(",\"contribuicaoDisponivel\":").append(contribuicaoDisponivel).append(",\"pagaram\":").append(pagaram).append(",\"percentualContribuicao\":").append(percentualContribuicao).append(",\"inadimplentesCompetencia\":").append(inadimplentesCompetencia).append(",\"percentualInadimplenciaCompetencia\":").append(percentualInadimplenciaCompetencia)
     .append(",\"inadimplenciaHistoricaDisponivel\":").append(inadimplenciaHistoricaDisponivel).append(",\"inadimplentesHistoricos\":").append(inadimplentesHistoricos).append(",\"percentualInadimplenciaHistorica\":").append(percentualInadimplenciaHistorica)
-     .append(",\"formacao100Disponivel\":").append(formacao100Disponivel).append(",\"membrosFormacao100\":").append(membrosFormacao100)
+     .append(",\"formacao100Disponivel\":").append(formacao100Disponivel).append(",\"membrosFormacao100\":").append(membrosFormacao100).append(",\"membrosFormacaoAvaliados\":").append(membrosFormacaoAvaliados)
      .append(",\"presencaAbaixo50Configurada\":").append(moduloPresencas&&presencaAtiva).append(",\"presencaAbaixo50Disponivel\":").append(presencaAbaixo50Disponivel).append(",\"membrosAbaixo50\":").append(membrosAbaixo50).append(",\"membrosAvaliadosPresenca\":").append(membrosAvaliadosPresenca).append('}');
   }
  }
  int mesAniversarios=0;try(PreparedStatement pm=c.prepareStatement("SELECT MONTH(CURDATE())");ResultSet rm=pm.executeQuery()){if(rm.next())mesAniversarios=rm.getInt(1);}
  json.append("],\"mes\":").append(mesAniversarios).append(",\"aniversariantes\":[");boolean primeiroAniversario=true;
- String sqlAniversarios="SELECT p.Nome,g.NomePlural,g.Cor,DATE_FORMAT(p.DtNascimento,'%d/%m') DataAniversario,DAY(p.DtNascimento) Dia FROM pessoas p JOIN grupos g ON g.IdGrupo=p.Classe AND g.StatusGrupo='ATIVO' AND g.GrupoOperacional=1 AND g.ModuloMembros=1 WHERE p.Status=1 AND p.DtNascimento IS NOT NULL AND MONTH(p.DtNascimento)=? ORDER BY DAY(p.DtNascimento),p.Nome";
- try(PreparedStatement pa=c.prepareStatement(sqlAniversarios)){pa.setInt(1,mesAniversarios);try(ResultSet ra=pa.executeQuery()){while(ra.next()){if(!primeiroAniversario)json.append(',');primeiroAniversario=false;json.append("{\"nome\":\"").append(jpa(ra.getString("Nome"))).append("\",\"grupo\":\"").append(jpa(ra.getString("NomePlural"))).append("\",\"cor\":\"").append(jpa(ra.getString("Cor"))).append("\",\"data\":\"").append(jpa(ra.getString("DataAniversario"))).append("\",\"dia\":").append(ra.getInt("Dia")).append('}');}}}
- out.print(json.append("]}"));
+ String sqlAniversarios="SELECT p.Classe,p.Nome,IFNULL(p.NomeEsposa,'') NomeEsposa,p.DtNascimento,p.DtOrdenacao,p.DtCasamento,p.DtNascEsposa,g.NomePlural,g.Cor FROM pessoas p JOIN grupos g ON g.IdGrupo=p.Classe AND g.StatusGrupo='ATIVO' AND g.GrupoOperacional=1 AND g.ModuloMembros=1 WHERE p.Status=1 AND (MONTH(p.DtNascimento)=? OR MONTH(p.DtOrdenacao)=? OR MONTH(p.DtCasamento)=? OR MONTH(p.DtNascEsposa)=?) ORDER BY p.Nome";
+ String[] tiposAniversario={"NASCIMENTO","ORDENACAO","CASAMENTO","ESPOSA"};
+ try(PreparedStatement pa=c.prepareStatement(sqlAniversarios)){for(int i=1;i<=4;i++)pa.setInt(i,mesAniversarios);try(ResultSet ra=pa.executeQuery()){while(ra.next()){
+  java.sql.Date[] datas={ra.getDate("DtNascimento"),ra.getDate("DtOrdenacao"),ra.getDate("DtCasamento"),ra.getDate("DtNascEsposa")};
+  for(int i=0;i<datas.length;i++){java.sql.Date data=datas[i];if(data==null||data.toLocalDate().getMonthValue()!=mesAniversarios)continue;if(!primeiroAniversario)json.append(',');primeiroAniversario=false;
+   json.append("{\"grupoId\":").append(ra.getInt("Classe")).append(",\"grupo\":\"").append(jpa(ra.getString("NomePlural"))).append("\",\"cor\":\"").append(jpa(ra.getString("Cor"))).append("\",\"nome\":\"").append(jpa(ra.getString("Nome"))).append("\",\"nomeEsposa\":\"").append(jpa(ra.getString("NomeEsposa"))).append("\",\"tipo\":\"").append(tiposAniversario[i]).append("\",\"data\":\"").append(new java.text.SimpleDateFormat("dd/MM").format(data)).append("\",\"dia\":").append(data.toLocalDate().getDayOfMonth()).append('}');
+  }
+ }}}} out.print(json.append("]}"));
 }catch(Exception e){getServletContext().log("Erro ao carregar painel administrativo por grupo",e);response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);out.print("{\"ok\":false,\"mensagem\":\"Não foi possível carregar os indicadores dos grupos.\"}");}
 %>
