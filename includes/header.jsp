@@ -147,7 +147,7 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
         <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="relatorios.jsp" title="Relat&#xF3;rios"><i class="bi bi-file-earmark-text"></i><span class="admin-sidebar-label">Relat&#xF3;rios</span></a></li><% } %>
         <% if ("ADM".equals(perfil) || "FIN".equals(perfil)) { %><li><a href="financeiro.jsp" title="Financeiro"><i class="bi bi-wallet2"></i><span class="admin-sidebar-label">Financeiro</span></a></li><% } %>
         <% if ("ADM".equals(perfil)) { %><li><a href="documentacoes.jsp?visao=admin" title="Gest&#xE3;o de Documenta&#xE7;&#xF5;es"><i class="bi bi-folder-check"></i><span class="admin-sidebar-label">Gest&#xE3;o de Documenta&#xE7;&#xF5;es</span></a></li><% } %>
-        <% if ("ADM".equals(perfil)) { %><li><a href="formacao-admin.jsp" title="Manuten&#xE7;&#xE3;o das Forma&#xE7;&#xF5;es"><i class="bi bi-gear"></i><span class="admin-sidebar-label">Manuten&#xE7;&#xE3;o das Forma&#xE7;&#xF5;es</span></a></li><% } %>
+        <% if ("ADM".equals(perfil)) { %><li><a href="formacao-admin.jsp" title="Manuten&#xE7;&#xE3;o das Forma&#xE7;&#xF5;es"><i class="bi bi-mortarboard"></i><span class="admin-sidebar-label">Manuten&#xE7;&#xE3;o das Forma&#xE7;&#xF5;es</span></a></li><% } %>
         <% if ("ADM".equals(perfil)) { %><li><a href="paroquias.jsp" title="Par&#xF3;quias"><i class="bi bi-building"></i><span class="admin-sidebar-label">Par&#xF3;quias</span></a></li><% } %>
         <% if ("ADM".equals(perfil)) { %><li><a href="usuarios.jsp" title="Usu&#xE1;rios"><i class="bi bi-shield-lock"></i><span class="admin-sidebar-label">Usu&#xE1;rios</span></a></li><% } %>
     </ul>
