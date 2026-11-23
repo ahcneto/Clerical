@@ -30,23 +30,18 @@ try(Connection c=cad.db.Database.getConnection()){
     try(PreparedStatement pp=c.prepareStatement(qp)){pp.setInt(1,justificadaConta?1:0);pp.setInt(2,idEncontro);pp.setInt(3,id);try(ResultSet rp=pp.executeQuery()){if(rp.next())presentes=rp.getInt("Presentes");}}
     percentualPresenca=pctpa(presentes,membros);
    }
-   boolean contribuicaoDisponivel=contribuicaoAtiva&&idEncontro>0&&membros>0;int pagaram=0,percentualContribuicao=0,inadimplentesCompetencia=0,percentualInadimplenciaCompetencia=0;
+   String competenciaContribuicao="";boolean contribuicaoMensal="MENSAL".equals(periodicidade);if(contribuicaoMensal){try(PreparedStatement pmc=c.prepareStatement("SELECT DATE_FORMAT(CURDATE(),'%m/%Y')");ResultSet rmc=pmc.executeQuery()){if(rmc.next())competenciaContribuicao=rmc.getString(1);}}else competenciaContribuicao=mesReferencia;
+   boolean contribuicaoDisponivel=contribuicaoAtiva&&(contribuicaoMensal||idEncontro>0)&&membros>0;int pagaram=0,percentualContribuicao=0,inadimplentesCompetencia=0,percentualInadimplenciaCompetencia=0;
    if(contribuicaoDisponivel){
     String qc="SELECT COUNT(DISTINCT p.IdPessoa) Pagaram FROM sqlPessoas p JOIN lancamentos l ON l.idPessoa=p.IdPessoa AND l.idClasse=? AND l.tipoLancamento='1.1' AND l.status=1 AND YEAR(l.dtVencimento)=? AND MONTH(l.dtVencimento)=? WHERE p.Classe=? AND p.status=1";
-    int mes=Integer.parseInt(mesReferencia.substring(0,2)),ano=Integer.parseInt(mesReferencia.substring(3));
+    int mes=Integer.parseInt(competenciaContribuicao.substring(0,2)),ano=Integer.parseInt(competenciaContribuicao.substring(3));
     try(PreparedStatement pc=c.prepareStatement(qc)){pc.setInt(1,id);pc.setInt(2,ano);pc.setInt(3,mes);pc.setInt(4,id);try(ResultSet rc=pc.executeQuery()){if(rc.next())pagaram=rc.getInt("Pagaram");}}
     percentualContribuicao=pctpa(pagaram,membros);inadimplentesCompetencia=Math.max(0,membros-pagaram);percentualInadimplenciaCompetencia=pctpa(inadimplentesCompetencia,membros);
    }
-   boolean inadimplenciaHistoricaDisponivel=contribuicaoAtiva&&membros>0;int inadimplentesHistoricos=0,percentualInadimplenciaHistorica=0;
-   if(inadimplenciaHistoricaDisponivel){
-    String qh="SELECT COUNT(DISTINCT p.IdPessoa) Inadimplentes FROM sqlPessoas p WHERE p.Classe=? AND p.status=1 AND EXISTS(SELECT 1 FROM lancamentos l WHERE l.idPessoa=p.IdPessoa AND l.idClasse=? AND l.tipoLancamento='1.1' AND l.status=0 AND l.dtVencimento<CURDATE())";
-    try(PreparedStatement ph=c.prepareStatement(qh)){ph.setInt(1,id);ph.setInt(2,id);try(ResultSet rh=ph.executeQuery()){if(rh.next())inadimplentesHistoricos=rh.getInt("Inadimplentes");}}
-    percentualInadimplenciaHistorica=pctpa(inadimplentesHistoricos,membros);
-   }
-       boolean formacao100Disponivel=false;int membrosFormacao100=0,membrosFormacaoAvaliados=0;long disciplinasObrigatoriasAtivas=0;
+       boolean formacao100Disponivel=false;int membrosFormacao100=0,membrosFormacaoAvaliados=0,membrosFormacaoNaoIniciada=0;long disciplinasObrigatoriasAtivas=0;
     if(moduloFormacao&&membros>0){
-     String qf="SELECT COALESCE(SUM(CASE WHEN x.Obrigatorias>0 AND x.Concluidas=x.Obrigatorias THEN 1 ELSE 0 END),0) Completas,COALESCE(SUM(CASE WHEN x.Obrigatorias>0 THEN 1 ELSE 0 END),0) MembrosAvaliados,COALESCE(SUM(x.Obrigatorias),0) TotalObrigatorias FROM (SELECT p.IdPessoa,COUNT(DISTINCT d.IdDisciplina) Obrigatorias,COUNT(DISTINCT CASE WHEN fp.StatusDisciplina='CONCLUIDA' THEN d.IdDisciplina END) Concluidas FROM sqlPessoas p LEFT JOIN formacao_programa_grupo pg ON pg.Classe=p.Classe LEFT JOIN formacao_programa pr ON pr.IdPrograma=pg.IdPrograma AND pr.StatusPrograma='ATIVO' LEFT JOIN formacao_disciplina d ON d.IdPrograma=pr.IdPrograma AND d.TipoDisciplina='OBRIGATORIA' LEFT JOIN formacao_pessoa_disciplina fp ON fp.IdPessoa=p.IdPessoa AND fp.IdDisciplina=d.IdDisciplina WHERE p.Classe=? AND p.status=1 GROUP BY p.IdPessoa) x";
-     try(PreparedStatement pf=c.prepareStatement(qf)){pf.setInt(1,id);try(ResultSet rf=pf.executeQuery()){if(rf.next()){membrosFormacao100=rf.getInt("Completas");disciplinasObrigatoriasAtivas=rf.getLong("TotalObrigatorias");membrosFormacaoAvaliados=rf.getInt("MembrosAvaliados");}}}
+     String qf="SELECT COALESCE(SUM(CASE WHEN x.Obrigatorias>0 AND x.Concluidas=x.Obrigatorias THEN 1 ELSE 0 END),0) Completas,COALESCE(SUM(CASE WHEN x.Obrigatorias>0 THEN 1 ELSE 0 END),0) MembrosAvaliados,COALESCE(SUM(CASE WHEN x.Obrigatorias>0 AND x.Iniciadas=0 THEN 1 ELSE 0 END),0) NaoIniciadas,COALESCE(SUM(x.Obrigatorias),0) TotalObrigatorias FROM (SELECT p.IdPessoa,COUNT(DISTINCT d.IdDisciplina) Obrigatorias,COUNT(DISTINCT CASE WHEN fp.StatusDisciplina='CONCLUIDA' THEN d.IdDisciplina END) Concluidas,COUNT(DISTINCT CASE WHEN fp.StatusDisciplina IN('EM_ANDAMENTO','CONCLUIDA') THEN d.IdDisciplina END) Iniciadas FROM sqlPessoas p LEFT JOIN formacao_programa_grupo pg ON pg.Classe=p.Classe LEFT JOIN formacao_programa pr ON pr.IdPrograma=pg.IdPrograma AND pr.StatusPrograma='ATIVO' LEFT JOIN formacao_disciplina d ON d.IdPrograma=pr.IdPrograma AND d.TipoDisciplina='OBRIGATORIA' LEFT JOIN formacao_pessoa_disciplina fp ON fp.IdPessoa=p.IdPessoa AND fp.IdDisciplina=d.IdDisciplina WHERE p.Classe=? AND p.status=1 GROUP BY p.IdPessoa) x";
+     try(PreparedStatement pf=c.prepareStatement(qf)){pf.setInt(1,id);try(ResultSet rf=pf.executeQuery()){if(rf.next()){membrosFormacao100=rf.getInt("Completas");disciplinasObrigatoriasAtivas=rf.getLong("TotalObrigatorias");membrosFormacaoAvaliados=rf.getInt("MembrosAvaliados");membrosFormacaoNaoIniciada=rf.getInt("NaoIniciadas");}}}
      formacao100Disponivel=disciplinasObrigatoriasAtivas>0;
     }
     boolean presencaAbaixo50Disponivel=false;int membrosAbaixo50=0,membrosAvaliadosPresenca=0;
@@ -57,11 +52,10 @@ try(Connection c=cad.db.Database.getConnection()){
     }
    if(!primeiro)json.append(',');primeiro=false;
    json.append("{\"id\":").append(id).append(",\"nome\":\"").append(jpa(nome)).append("\",\"cor\":\"").append(jpa(cor)).append("\",\"membrosAtivos\":").append(membros)
-    .append(",\"encontroId\":").append(idEncontro).append(",\"dataEncontro\":\"").append(jpa(dataEncontro)).append("\",\"mesReferencia\":\"").append(jpa(mesReferencia)).append("\"")
+    .append(",\"encontroId\":").append(idEncontro).append(",\"dataEncontro\":\"").append(jpa(dataEncontro)).append("\",\"mesReferencia\":\"").append(jpa(mesReferencia)).append("\",\"competenciaContribuicao\":\"").append(jpa(competenciaContribuicao)).append("\",\"contribuicaoMensal\":").append(contribuicaoMensal)
     .append(",\"presencaDisponivel\":").append(presencaDisponivel).append(",\"presentes\":").append(presentes).append(",\"percentualPresenca\":").append(percentualPresenca)
     .append(",\"contribuicaoDisponivel\":").append(contribuicaoDisponivel).append(",\"pagaram\":").append(pagaram).append(",\"percentualContribuicao\":").append(percentualContribuicao).append(",\"inadimplentesCompetencia\":").append(inadimplentesCompetencia).append(",\"percentualInadimplenciaCompetencia\":").append(percentualInadimplenciaCompetencia)
-    .append(",\"inadimplenciaHistoricaDisponivel\":").append(inadimplenciaHistoricaDisponivel).append(",\"inadimplentesHistoricos\":").append(inadimplentesHistoricos).append(",\"percentualInadimplenciaHistorica\":").append(percentualInadimplenciaHistorica)
-     .append(",\"formacao100Disponivel\":").append(formacao100Disponivel).append(",\"membrosFormacao100\":").append(membrosFormacao100).append(",\"membrosFormacaoAvaliados\":").append(membrosFormacaoAvaliados)
+     .append(",\"formacao100Disponivel\":").append(formacao100Disponivel).append(",\"membrosFormacao100\":").append(membrosFormacao100).append(",\"membrosFormacaoAvaliados\":").append(membrosFormacaoAvaliados).append(",\"membrosFormacaoNaoIniciada\":").append(membrosFormacaoNaoIniciada)
      .append(",\"presencaAbaixo50Configurada\":").append(moduloPresencas&&presencaAtiva).append(",\"presencaAbaixo50Disponivel\":").append(presencaAbaixo50Disponivel).append(",\"membrosAbaixo50\":").append(membrosAbaixo50).append(",\"membrosAvaliadosPresenca\":").append(membrosAvaliadosPresenca).append('}');
   }
  }

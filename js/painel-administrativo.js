@@ -29,7 +29,7 @@ function renderizarFiltroGrupos() {
 }
 
 function indicadorPainel(icone, titulo, valor, detalhe) {
-    return `<div class="col-6 col-lg-4"><div class="painel-indicador"><small><i class="bi ${icone} me-1"></i>${textoSeguro(titulo)}</small><strong>${textoSeguro(valor)}</strong><small>${textoSeguro(detalhe || "")}</small></div></div>`;
+    return `<div class="painel-indicador"><small><i class="bi ${icone} me-1"></i>${textoSeguro(titulo)}</small><strong>${textoSeguro(valor)}</strong><small>${textoSeguro(detalhe || "")}</small></div>`;
 }
 function somar(grupos, chave, disponibilidade) {
     const elegiveis = disponibilidade ? grupos.filter(g => g[disponibilidade]) : grupos;
@@ -40,26 +40,35 @@ function renderizarIndicadores() {
     const container = document.getElementById("painelGrupos");
     const titulo = grupoSelecionado === null ? "Todos os grupos" : (grupos[0]?.nome || "Grupo");
     document.getElementById("painelFiltroTitulo").textContent = titulo;
-    if (!grupos.length) { container.innerHTML = '<div class="col-12 text-muted">Nenhum grupo disponível.</div>'; return; }
+    if (!grupos.length) { container.innerHTML = '<div class="col-12 text-muted">Nenhum grupo dispon\u00edvel.</div>'; return; }
     const p = somar(grupos,"presentes","presencaDisponivel");
     const c = somar(grupos,"pagaram","contribuicaoDisponivel");
     const comp = somar(grupos,"inadimplentesCompetencia","contribuicaoDisponivel");
-    const hist = somar(grupos,"inadimplentesHistoricos","inadimplenciaHistoricaDisponivel");
     const form = somar(grupos,"membrosFormacao100","formacao100Disponivel");
+    const formNaoIniciada = somar(grupos,"membrosFormacaoNaoIniciada","formacao100Disponivel");
     const formDen = grupos.filter(g=>g.formacao100Disponivel).reduce((s,g)=>s+numero(g,"membrosFormacaoAvaliados"),0);
     const pres = grupos.filter(g=>g.presencaAbaixo50Disponivel);
     const presCount = pres.reduce((s,g)=>s+numero(g,"membrosAbaixo50"),0);
     const presDen = pres.reduce((s,g)=>s+numero(g,"membrosAvaliadosPresenca"),0);
     const dataEncontros = [...new Set(grupos.filter(g=>g.presencaDisponivel).map(g=>g.dataEncontro).filter(Boolean))];
-    const competencias = [...new Set(grupos.filter(g=>g.contribuicaoDisponivel).map(g=>g.mesReferencia).filter(Boolean))];
-    const dash = "—";
+    const compMensal = [...new Set(grupos.filter(g=>g.contribuicaoDisponivel&&g.contribuicaoMensal).map(g=>g.competenciaContribuicao).filter(Boolean))];
+    const compEncontro = [...new Set(grupos.filter(g=>g.contribuicaoDisponivel&&!g.contribuicaoMensal).map(g=>g.competenciaContribuicao).filter(Boolean))];
+    const detalheCompetencia = [compMensal.length ? `Mensal: ${compMensal.join(", ")}` : "", compEncontro.length ? `\u00daltimo encontro: ${compEncontro.join(", ")}` : ""].filter(Boolean).join(" \u00b7 ");
+    const dash = "\u2014";
+    const coluna = cartoes => `<div class="col-12 col-lg-4"><div class="d-grid gap-3">${cartoes.join("")}</div></div>`;
     container.innerHTML = [
-      indicadorPainel("bi-calendar2-check","Presença no último encontro",p.n?`${percentual(p.parte,p.total)}%`:dash,p.n?`${p.parte} presentes · ${dataEncontros.join(", ") || "últimos encontros"}`:"Sem presença disponível"),
-      indicadorPainel("bi-cash-coin","Contribuições no mês do encontro",c.n?`${percentual(c.parte,c.total)}%`:dash,c.n?`${c.parte} membros pagaram · ${competencias.join(", ") || "competências"}`:"Sem competência disponível"),
-      indicadorPainel("bi-exclamation-circle","Sem pagamento na competência",comp.n?`${comp.parte} (${percentual(comp.parte,comp.total)}%)`:dash,comp.n?`Mês do último encontro: ${competencias.join(", ")}`:"Não calculado"),
-      indicadorPainel("bi-clock-history","Inadimplentes históricos",hist.n?`${hist.parte} (${percentual(hist.parte,hist.total)}%)`:dash,hist.n?"Com contribuição vencida registrada":"Contribuição não configurada"),
-      indicadorPainel("bi-journal-check","Formação 100% concluída",form.n?form.parte:dash,form.n?`de ${formDen} membros avaliados · disciplinas obrigatórias`:"Sem formação obrigatória ativa"),
-      indicadorPainel("bi-graph-down-arrow","Presença abaixo de 50%",pres.length?presCount:dash,pres.length?`de ${presDen} avaliados · ano atual`:"Sem registros de presença no ano atual")
+      coluna([
+        indicadorPainel("bi-calendar2-check","Presen\u00e7a no \u00faltimo encontro",p.n?`${percentual(p.parte,p.total)}%`:dash,p.n?`${p.parte} presentes \u00b7 ${dataEncontros.join(", ") || "\u00faltimos encontros"}`:"Sem presen\u00e7a dispon\u00edvel"),
+        indicadorPainel("bi-graph-down-arrow","Presen\u00e7a abaixo de 50%",pres.length?presCount:dash,pres.length?`de ${presDen} avaliados \u00b7 ano atual`:"Sem registros de presen\u00e7a no ano atual")
+      ]),
+      coluna([
+        indicadorPainel("bi-cash-coin","Contribui\u00e7\u00f5es na compet\u00eancia",c.n?`${percentual(c.parte,c.total)}%`:dash,c.n?`${c.parte} membros pagaram \u00b7 ${detalheCompetencia}`:"Sem compet\u00eancia dispon\u00edvel"),
+        indicadorPainel("bi-exclamation-circle","Sem pagamento na compet\u00eancia",comp.n?`${comp.parte} (${percentual(comp.parte,comp.total)}%)`:dash,comp.n?detalheCompetencia:"N\u00e3o calculado")
+      ]),
+      coluna([
+        indicadorPainel("bi-journal-check","Forma\u00e7\u00e3o 100% conclu\u00edda",form.n?form.parte:dash,form.n?`de ${formDen} membros avaliados \u00b7 disciplinas obrigat\u00f3rias`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa"),
+        indicadorPainel("bi-journal-x","Forma\u00e7\u00e3o n\u00e3o iniciada",formNaoIniciada.n?formNaoIniciada.parte:dash,formNaoIniciada.n?`de ${formDen} membros avaliados`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa")
+      ])
     ].join("");
 }
 
