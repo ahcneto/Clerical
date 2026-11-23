@@ -28,8 +28,10 @@ function renderizarFiltroGrupos() {
     }));
 }
 
-function indicadorPainel(icone, titulo, valor, detalhe) {
-    return `<div class="painel-indicador"><small><i class="bi ${icone} me-1"></i>${textoSeguro(titulo)}</small><strong>${textoSeguro(valor)}</strong><small>${textoSeguro(detalhe || "")}</small></div>`;
+function indicadorPainel(icone, titulo, valor, detalhe, tipo) {
+    const inicio = tipo ? `<button type="button" class="painel-indicador painel-indicador-clicavel" data-indicador="${tipo}" aria-label="Ver membros: ${textoSeguro(titulo)}">` : '<div class="painel-indicador">';
+    const fim = tipo ? '</button>' : '</div>';
+    return `${inicio}<small><i class="bi ${icone} me-1"></i>${textoSeguro(titulo)}</small><strong>${textoSeguro(valor)}</strong><small>${textoSeguro(detalhe || "")}</small>${fim}`;
 }
 function somar(grupos, chave, disponibilidade) {
     const elegiveis = disponibilidade ? grupos.filter(g => g[disponibilidade]) : grupos;
@@ -59,15 +61,15 @@ function renderizarIndicadores() {
     container.innerHTML = [
       coluna([
         indicadorPainel("bi-calendar2-check","Presen\u00e7a no \u00faltimo encontro",p.n?`${percentual(p.parte,p.total)}%`:dash,p.n?`${p.parte} presentes \u00b7 ${dataEncontros.join(", ") || "\u00faltimos encontros"}`:"Sem presen\u00e7a dispon\u00edvel"),
-        indicadorPainel("bi-graph-down-arrow","Presen\u00e7a abaixo de 50%",pres.length?presCount:dash,pres.length?`de ${presDen} avaliados \u00b7 ano atual`:"Sem registros de presen\u00e7a no ano atual")
+        indicadorPainel("bi-graph-down-arrow","Presen\u00e7a abaixo de 50%",pres.length?presCount:dash,pres.length?`de ${presDen} avaliados \u00b7 ano atual`:"Sem registros de presen\u00e7a no ano atual","PRESENCA_ABAIXO_50")
       ]),
       coluna([
         indicadorPainel("bi-cash-coin","Contribui\u00e7\u00f5es na compet\u00eancia",c.n?`${percentual(c.parte,c.total)}%`:dash,c.n?`${c.parte} membros pagaram \u00b7 ${detalheCompetencia}`:"Sem compet\u00eancia dispon\u00edvel"),
         indicadorPainel("bi-exclamation-circle","Sem contribui\u00e7\u00f5es no ano atual",semAno.n?`${semAno.parte} (${percentual(semAno.parte,semAno.total)}%)`:dash,semAno.n?"Sem contribui\u00e7\u00e3o paga no ano atual":"N\u00e3o calculado")
       ]),
       coluna([
-        indicadorPainel("bi-journal-check","Forma\u00e7\u00e3o 100% conclu\u00edda",form.n?form.parte:dash,form.n?`de ${formDen} membros avaliados \u00b7 disciplinas obrigat\u00f3rias`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa"),
-        indicadorPainel("bi-journal-x","Forma\u00e7\u00e3o n\u00e3o iniciada",formNaoIniciada.n?formNaoIniciada.parte:dash,formNaoIniciada.n?`de ${formDen} membros avaliados`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa")
+        indicadorPainel("bi-journal-check","Forma\u00e7\u00e3o 100% conclu\u00edda",form.n?form.parte:dash,form.n?`de ${formDen} membros avaliados \u00b7 disciplinas obrigat\u00f3rias`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa","FORMACAO_100"),
+        indicadorPainel("bi-journal-x","Forma\u00e7\u00e3o n\u00e3o iniciada",formNaoIniciada.n?formNaoIniciada.parte:dash,formNaoIniciada.n?`de ${formDen} membros avaliados`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa","FORMACAO_NAO_INICIADA")
       ])
     ].join("");
 }
@@ -106,4 +108,28 @@ async function carregarPainelAdministrativo(){
     }
 }
 document.getElementById("filtrosAniversario").addEventListener("click",event=>{const btn=event.target.closest("[data-tipo]");if(!btn)return;tipoAniversarioSelecionado=btn.dataset.tipo;renderizarAniversariantes();});
+const modalMembrosIndicador = new bootstrap.Modal(document.getElementById("modalMembrosIndicador"));
+const titulosIndicadores = { PRESENCA_ABAIXO_50:"Presença abaixo de 50%", FORMACAO_100:"Formação 100% concluída", FORMACAO_NAO_INICIADA:"Formação não iniciada" };
+document.getElementById("painelGrupos").addEventListener("click", async event => {
+    const botao = event.target.closest("[data-indicador]");
+    if (!botao) return;
+    const tipo = botao.dataset.indicador;
+    const elegivel = g => tipo === "PRESENCA_ABAIXO_50" ? g.presencaAbaixo50Disponivel : g.formacao100Disponivel;
+    const grupos = gruposVisiveis().filter(elegivel);
+    const lista = document.getElementById("listaMembrosIndicador");
+    document.getElementById("tituloMembrosIndicador").textContent = titulosIndicadores[tipo] || "Membros";
+    document.getElementById("subtituloMembrosIndicador").textContent = grupoSelecionado === null ? "Todos os grupos" : (gruposVisiveis()[0]?.nome || "Grupo");
+    lista.innerHTML = '<div class="list-group-item text-muted">Carregando membros...</div>';
+    modalMembrosIndicador.show();
+    if (!grupos.length) { lista.innerHTML = '<div class="list-group-item text-muted">Nenhum membro encontrado para este indicador.</div>'; return; }
+    try {
+        const query = new URLSearchParams({ acao: "membrosIndicador", tipo, grupos: grupos.map(g => g.id).join(",") });
+        const resposta = await fetch(`painel_administrativo_api.jsp?${query}`, { cache: "no-store" });
+        const dados = await resposta.json();
+        if (!resposta.ok || !dados.ok) throw new Error(dados.mensagem || "Não foi possível carregar os membros.");
+        lista.innerHTML = dados.membros.length ? dados.membros.map(m => `<div class="list-group-item d-flex justify-content-between gap-3"><strong>${textoSeguro(m.nome)}</strong><span class="text-muted small text-end">${textoSeguro(m.grupo)}</span></div>`).join("") : '<div class="list-group-item text-muted">Nenhum membro encontrado para este indicador.</div>';
+    } catch (erro) {
+        lista.innerHTML = `<div class="list-group-item text-danger">${textoSeguro(erro.message)}</div>`;
+    }
+});
 carregarPainelAdministrativo();
