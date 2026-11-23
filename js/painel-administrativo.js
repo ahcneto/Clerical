@@ -31,6 +31,14 @@ function cartaoGrupoPainel(grupo) {
     const detalheHistorico = grupo.inadimplenciaHistoricaDisponivel
         ? "Com lançamento vencido registrado"
         : "Contribuição não configurada";
+    const formacao100 = grupo.formacao100Disponivel ? Number(grupo.membrosFormacao100 || 0) : "—";
+    const detalheFormacao100 = grupo.formacao100Disponivel
+        ? `de ${total} membros ativos · todas as disciplinas obrigatórias concluídas`
+        : "Sem disciplinas obrigatórias ativas";
+    const membrosAbaixo50 = grupo.presencaAbaixo50Disponivel ? Number(grupo.membrosAbaixo50 || 0) : "—";
+    const detalheAbaixo50 = grupo.presencaAbaixo50Disponivel
+        ? `de ${grupo.membrosAvaliadosPresenca} avaliados · ano atual`
+        : (grupo.presencaAbaixo50Configurada ? "Sem registros de presença no ano atual" : "Presença não configurada");
 
     return `<div class="col-12 col-xl-6"><section class="painel-grupo-card" style="--grupo-cor:${cor}">
         <div class="d-flex align-items-center justify-content-between gap-2 mb-3"><h2 class="h5 painel-grupo-titulo mb-0">${textoSeguro(grupo.nome)}</h2><span class="badge rounded-pill" style="background:${cor}">Grupo</span></div>
@@ -40,6 +48,8 @@ function cartaoGrupoPainel(grupo) {
             ${indicadorPainel("bi-cash-coin", "% contribuições · mês do encontro", contribuicao, detalheContribuicao)}
             ${indicadorPainel("bi-exclamation-circle", "Sem pagamento na competência", inadimplentes, detalheInadimplentes)}
             ${indicadorPainel("bi-clock-history", "Inadimplentes históricos", historico, detalheHistorico)}
+            ${indicadorPainel("bi-journal-check", "Formação 100% concluída", formacao100, detalheFormacao100)}
+            ${indicadorPainel("bi-graph-down-arrow", "Presença abaixo de 50%", membrosAbaixo50, detalheAbaixo50)}
         </div>
     </section></div>`;
 }
