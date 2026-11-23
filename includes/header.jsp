@@ -58,7 +58,7 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
             <i class="bi bi-bank"></i> <%= tituloCabecalhoFixo %>
         </a>
 
-        <% if (!"USR".equals(perfil)) { %>
+        <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
         <button id="adminMenuMobileToggle" class="admin-mobile-toggle btn btn-outline-secondary me-2" type="button" onclick="toggleAdminMenu()" aria-label="Abrir menu administrativo" aria-controls="adminSidebar" aria-expanded="false" title="Menu administrativo">
             <i class="bi bi-layout-sidebar-inset"></i>
         </button>
@@ -73,9 +73,6 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
 
            <ul class="navbar-nav mx-auto">
     <li class="nav-item"><a class="nav-link" href="index.jsp"><i class="bi bi-house"></i> Início</a></li>
-    <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
-    <li class="nav-item"><a class="nav-link" href="encontros.jsp"><i class="bi bi-calendar-event"></i> Encontros</a></li>
-    <% } %>
     <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
     <li class="nav-item"><a class="nav-link" href="formacoes.jsp"><i class="bi bi-journal-check"></i> Formação</a></li>
     <li class="nav-item"><a class="nav-link" href="documentacoes.jsp"><i class="bi bi-folder-check"></i> Documentação</a></li>
@@ -142,6 +139,7 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
 <aside id="adminSidebar" class="admin-sidebar" aria-label="Menu administrativo">
     <button class="admin-sidebar-toggle" type="button" onclick="toggleAdminMenu()" aria-label="Expandir ou recolher menu administrativo" title="Expandir ou recolher menu"><i class="bi bi-layout-sidebar-inset"></i><span class="admin-sidebar-label ms-2">Menu administrativo</span></button>
     <ul>
+        <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="encontros.jsp" title="Encontros"><i class="bi bi-calendar-event"></i><span class="admin-sidebar-label">Encontros</span></a></li><% } %>
         <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="membros.jsp" title="Membros"><i class="bi bi-people"></i><span class="admin-sidebar-label">Membros</span></a></li><% } %>
         <% if ("ADM".equals(perfil) || "FIN".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="contribuicoes.jsp" title="Contribuições"><i class="bi bi-cash"></i><span class="admin-sidebar-label">Contribuições</span></a></li><% } %>
         <% if ("ADM".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="avaliacoes.jsp" title="Avaliações"><i class="bi bi-clipboard2-check"></i><span class="admin-sidebar-label">Avaliações</span></a></li><% } %>
