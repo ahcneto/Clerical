@@ -11,6 +11,18 @@ String tituloCabecalhoFixo = "Clerical";
 <script>window.usuarioCatalogoPerfil="<%= perfil %>";window.usuarioCatalogoGrupo=<%= grupoCabecalhoId==null?"null":grupoCabecalhoId.toString() %>;</script>
 
 <style>
+body { padding-left: 4.25rem; transition: padding-left .2s ease; }
+body.admin-menu-expanded { padding-left: 15rem; }
+.admin-sidebar { position: fixed; z-index: 1040; left: 0; top: 72px; bottom: 0; width: 4.25rem; overflow: auto hidden; background: #fff; border-right: 1px solid #e2e8f0; box-shadow: 4px 0 12px rgba(15,23,42,.06); transition: width .2s ease; }
+body.admin-menu-expanded .admin-sidebar { width: 15rem; }
+.admin-sidebar-toggle { width: 100%; border: 0; background: transparent; padding: 1rem; text-align: center; color: #475569; }
+.admin-sidebar ul { list-style: none; padding: .25rem .5rem; margin: 0; }
+.admin-sidebar a { display: flex; align-items: center; gap: .85rem; min-height: 2.8rem; padding: .55rem .8rem; border-radius: .5rem; color: #334155; text-decoration: none; white-space: nowrap; }
+.admin-sidebar a:hover { background: #f1f5f9; color: #0f172a; }
+.admin-sidebar a i { width: 1.35rem; text-align: center; font-size: 1.1rem; }
+.admin-sidebar-label { display: none; }
+body.admin-menu-expanded .admin-sidebar-label { display: inline; }
+@media (max-width: 991px) { body { padding-left: 0; } .admin-sidebar { top: 64px; } }
 @media (max-width: 991px) {
     #mainMenu.navbar-collapse {
         background: #ffffff !important;
@@ -43,81 +55,17 @@ String tituloCabecalhoFixo = "Clerical";
         <div class="collapse navbar-collapse" id="mainMenu">
 
            <ul class="navbar-nav mx-auto">
-    <li class="nav-item">
-        <a class="nav-link" href="index.jsp">
-            <i class="bi bi-house"></i> Início
-        </a>
-    </li>
-
-			<% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %>
-		<li class="nav-item">
-			<a class="nav-link" href="membros.jsp">
-				<i class="bi bi-people"></i> Membros
-			</a>
-		</li>
-		<% } %>
-
-				 <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
-		<li class="nav-item">
-			<a class="nav-link" href="encontros.jsp">
-				<i class="bi bi-calendar-event"></i> Encontros
-			</a>
-		</li>
-		<% } %>
-
-			<% if ("ADM".equals(perfil) || "FIN".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %>
-		<li class="nav-item">
-			<a class="nav-link" href="contribuicoes.jsp">
-				<i class="bi bi-cash"></i> Contribuições
-			</a>
-		</li>
-		<% } %>
-
-        <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
-        <li class="nav-item">
-            <a class="nav-link" href="formacoes.jsp">
-                <i class="bi bi-journal-check"></i> Formação
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="documentacoes.jsp">
-                <i class="bi bi-folder-check"></i> Documentação
-            </a>
-        </li>
-        <% } %>
-
-		<% if ("ADM".equals(perfil) || "EXT".equals(perfil)) { %>
-		<li class="nav-item">
-			<a class="nav-link" href="avaliacoes.jsp">
-				<i class="bi bi-clipboard2-check"></i> Avaliações
-			</a>
-		</li>
-		<% } %>
-
-        	<% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %>
-		<li class="nav-item">
-			<a class="nav-link" href="relatorios.jsp">
-				<i class="bi bi-file-earmark-text "></i> Relatórios
-			</a>
-		</li>
-		<% } %>
-
-        <% if ("ADM".equals(perfil) || "FIN".equals(perfil)) { %>
-        <li class="nav-item"><a class="nav-link" href="financeiro.jsp"><i class="bi bi-wallet2"></i> Financeiro</a></li>
-        <% } %>
-
-        <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
-          <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="bi bi-bar-chart"></i> Painel</a></li>
-        <% } %>
-
-        <% if ("ADM".equals(perfil)) { %>
-        <li class="nav-item"><a class="nav-link" href="paroquias.jsp"><i class="bi bi-building"></i> Paróquias</a></li>
-        <li class="nav-item">
-            <a class="nav-link" href="usuarios.jsp">
-                <i class="bi bi-shield-lock"></i> Usuários
-            </a>
-        </li>
-        <% } %>
+    <li class="nav-item"><a class="nav-link" href="index.jsp"><i class="bi bi-house"></i> Início</a></li>
+    <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
+    <li class="nav-item"><a class="nav-link" href="encontros.jsp"><i class="bi bi-calendar-event"></i> Encontros</a></li>
+    <% } %>
+    <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
+    <li class="nav-item"><a class="nav-link" href="formacoes.jsp"><i class="bi bi-journal-check"></i> Formação</a></li>
+    <li class="nav-item"><a class="nav-link" href="documentacoes.jsp"><i class="bi bi-folder-check"></i> Documentação</a></li>
+    <% } %>
+    <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
+    <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="bi bi-bar-chart"></i> Painel</a></li>
+    <% } %>
 </ul>
 
             <div class="user-menu-container">
@@ -174,6 +122,18 @@ String tituloCabecalhoFixo = "Clerical";
         </div>
     </div>
 </nav>
+<aside class="admin-sidebar" aria-label="Menu administrativo">
+    <button class="admin-sidebar-toggle" type="button" onclick="toggleAdminMenu()" aria-label="Expandir ou recolher menu administrativo" title="Expandir ou recolher menu"><i class="bi bi-layout-sidebar-inset"></i><span class="admin-sidebar-label ms-2">Menu administrativo</span></button>
+    <ul>
+        <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="membros.jsp" title="Membros"><i class="bi bi-people"></i><span class="admin-sidebar-label">Membros</span></a></li><% } %>
+        <% if ("ADM".equals(perfil) || "FIN".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="contribuicoes.jsp" title="Contribuições"><i class="bi bi-cash"></i><span class="admin-sidebar-label">Contribuições</span></a></li><% } %>
+        <% if ("ADM".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="avaliacoes.jsp" title="Avaliações"><i class="bi bi-clipboard2-check"></i><span class="admin-sidebar-label">Avaliações</span></a></li><% } %>
+        <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="relatorios.jsp" title="Relatórios"><i class="bi bi-file-earmark-text"></i><span class="admin-sidebar-label">Relatórios</span></a></li><% } %>
+        <% if ("ADM".equals(perfil) || "FIN".equals(perfil)) { %><li><a href="financeiro.jsp" title="Financeiro"><i class="bi bi-wallet2"></i><span class="admin-sidebar-label">Financeiro</span></a></li><% } %>
+        <% if ("ADM".equals(perfil)) { %><li><a href="paroquias.jsp" title="Paróquias"><i class="bi bi-building"></i><span class="admin-sidebar-label">Paróquias</span></a></li><li><a href="usuarios.jsp" title="Usuários"><i class="bi bi-shield-lock"></i><span class="admin-sidebar-label">Usuários</span></a></li><% } %>
+    </ul>
+</aside>
+<script>function toggleAdminMenu(){var aberto=document.body.classList.toggle('admin-menu-expanded');try{localStorage.setItem('adminMenuExpanded',aberto?'1':'0');}catch(e){}}(function(){try{if(localStorage.getItem('adminMenuExpanded')==='1')document.body.classList.add('admin-menu-expanded');}catch(e){}})();</script>
 <script>
 (function(){try{var contexto='<%= request.getContextPath() %>',caminho=location.pathname;if(contexto&&caminho.indexOf(contexto+'/')===0)caminho=caminho.substring(contexto.length+1);else caminho=caminho.replace(/^\/+/, '');if(!/\.(jsp|html)$/i.test(caminho))return;var dados='pagina='+encodeURIComponent(caminho)+'&titulo='+encodeURIComponent(document.title||'');fetch(contexto+'/registrarAcesso.jsp',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:dados,credentials:'same-origin',keepalive:true}).catch(function(){});}catch(e){}})();
 </script>
