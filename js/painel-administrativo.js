@@ -43,7 +43,7 @@ function renderizarIndicadores() {
     if (!grupos.length) { container.innerHTML = '<div class="col-12 text-muted">Nenhum grupo dispon\u00edvel.</div>'; return; }
     const p = somar(grupos,"presentes","presencaDisponivel");
     const c = somar(grupos,"pagaram","contribuicaoDisponivel");
-    const comp = somar(grupos,"inadimplentesCompetencia","contribuicaoDisponivel");
+    const semAno = somar(grupos,"semContribuicaoAnoAtual","semContribuicaoAnoDisponivel");
     const form = somar(grupos,"membrosFormacao100","formacao100Disponivel");
     const formNaoIniciada = somar(grupos,"membrosFormacaoNaoIniciada","formacao100Disponivel");
     const formDen = grupos.filter(g=>g.formacao100Disponivel).reduce((s,g)=>s+numero(g,"membrosFormacaoAvaliados"),0);
@@ -63,7 +63,7 @@ function renderizarIndicadores() {
       ]),
       coluna([
         indicadorPainel("bi-cash-coin","Contribui\u00e7\u00f5es na compet\u00eancia",c.n?`${percentual(c.parte,c.total)}%`:dash,c.n?`${c.parte} membros pagaram \u00b7 ${detalheCompetencia}`:"Sem compet\u00eancia dispon\u00edvel"),
-        indicadorPainel("bi-exclamation-circle","Sem pagamento na compet\u00eancia",comp.n?`${comp.parte} (${percentual(comp.parte,comp.total)}%)`:dash,comp.n?detalheCompetencia:"N\u00e3o calculado")
+        indicadorPainel("bi-exclamation-circle","Sem contribui\u00e7\u00f5es no ano atual",semAno.n?`${semAno.parte} (${percentual(semAno.parte,semAno.total)}%)`:dash,semAno.n?"Sem contribui\u00e7\u00e3o paga no ano atual":"N\u00e3o calculado")
       ]),
       coluna([
         indicadorPainel("bi-journal-check","Forma\u00e7\u00e3o 100% conclu\u00edda",form.n?form.parte:dash,form.n?`de ${formDen} membros avaliados \u00b7 disciplinas obrigat\u00f3rias`:"Sem forma\u00e7\u00e3o obrigat\u00f3ria ativa"),
