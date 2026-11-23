@@ -75,7 +75,7 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
     <li class="nav-item"><a class="nav-link" href="index.jsp"><i class="bi bi-house"></i> Início</a></li>
     <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
     <li class="nav-item"><a class="nav-link" href="formacoes.jsp"><i class="bi bi-journal-check"></i> Formação</a></li>
-    <li class="nav-item"><a class="nav-link" href="documentacoes.jsp"><i class="bi bi-folder-check"></i> Documentação</a></li>
+    <li class="nav-item"><a class="nav-link" href="documentacoes.jsp?visao=usuario"><i class="bi bi-folder-check"></i> Documentação</a></li>
     <% } %>
     <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "USR".equals(perfil) || "FIN".equals(perfil) || "EXT".equals(perfil)) { %>
     <li class="nav-item"><a class="nav-link" href="dashboard.html"><i class="bi bi-bar-chart"></i> Painel</a></li>
@@ -145,7 +145,7 @@ body.admin-menu-expanded .admin-sidebar-label { display: inline; }
         <% if ("ADM".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="avaliacoes.jsp" title="Avaliações"><i class="bi bi-clipboard2-check"></i><span class="admin-sidebar-label">Avaliações</span></a></li><% } %>
         <% if ("ADM".equals(perfil) || "REP".equals(perfil) || "EXT".equals(perfil)) { %><li><a href="relatorios.jsp" title="Relatórios"><i class="bi bi-file-earmark-text"></i><span class="admin-sidebar-label">Relatórios</span></a></li><% } %>
         <% if ("ADM".equals(perfil) || "FIN".equals(perfil)) { %><li><a href="financeiro.jsp" title="Financeiro"><i class="bi bi-wallet2"></i><span class="admin-sidebar-label">Financeiro</span></a></li><% } %>
-        <% if ("ADM".equals(perfil)) { %><li><a href="formacao-admin.jsp" title="Manutenção das Formações"><i class="bi bi-gear"></i><span class="admin-sidebar-label">Manutenção das Formações</span></a></li><li><a href="paroquias.jsp" title="Paróquias"><i class="bi bi-building"></i><span class="admin-sidebar-label">Paróquias</span></a></li><li><a href="usuarios.jsp" title="Usuários"><i class="bi bi-shield-lock"></i><span class="admin-sidebar-label">Usuários</span></a></li><% } %>
+        <% if ("ADM".equals(perfil)) { %><li><a href="documentacoes.jsp?visao=admin" title="Gestão de Documentações"><i class="bi bi-folder-check"></i><span class="admin-sidebar-label">Gestão de Documentações</span></a></li><li><a href="formacao-admin.jsp" title="Manutenção das Formações"><i class="bi bi-gear"></i><span class="admin-sidebar-label">Manutenção das Formações</span></a></li><li><a href="paroquias.jsp" title="Paróquias"><i class="bi bi-building"></i><span class="admin-sidebar-label">Paróquias</span></a></li><li><a href="usuarios.jsp" title="Usuários"><i class="bi bi-shield-lock"></i><span class="admin-sidebar-label">Usuários</span></a></li><% } %>
     </ul>
 </aside>
 <button class="admin-menu-backdrop" type="button" onclick="closeAdminMenu()" aria-label="Fechar menu administrativo"></button>
