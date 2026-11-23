@@ -74,6 +74,6 @@ try(Connection c=cad.db.Database.getConnection()){
   for(int i=0;i<datas.length;i++){java.sql.Date data=datas[i];if(data==null||data.toLocalDate().getMonthValue()!=mesAniversarios)continue;if(!primeiroAniversario)json.append(',');primeiroAniversario=false;
    json.append("{\"grupoId\":").append(ra.getInt("Classe")).append(",\"grupo\":\"").append(jpa(ra.getString("NomePlural"))).append("\",\"cor\":\"").append(jpa(ra.getString("Cor"))).append("\",\"nome\":\"").append(jpa(ra.getString("Nome"))).append("\",\"nomeEsposa\":\"").append(jpa(ra.getString("NomeEsposa"))).append("\",\"tipo\":\"").append(tiposAniversario[i]).append("\",\"data\":\"").append(new java.text.SimpleDateFormat("dd/MM").format(data)).append("\",\"dia\":").append(data.toLocalDate().getDayOfMonth()).append('}');
   }
- }}}} out.print(json.append("]}"));
+ }}} out.print(json.append("]}"));
 }catch(Exception e){getServletContext().log("Erro ao carregar painel administrativo por grupo",e);response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);out.print("{\"ok\":false,\"mensagem\":\"Não foi possível carregar os indicadores dos grupos.\"}");}
 %>
