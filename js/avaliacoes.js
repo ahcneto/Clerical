@@ -1,5 +1,5 @@
 (() => {
-    const state = { ciclos: [], ciclo: null, pessoa: null, avaliacoes: [] };
+    const state = { ciclos: [], ciclo: null, pessoa: null, avaliacoes: [], membrosFiltrados: [] };
     const $ = id => document.getElementById(id);
     const modal = new bootstrap.Modal($("modalCiclo"));
     const modalIndicadores = new bootstrap.Modal($("modalIndicadores"));
@@ -65,7 +65,7 @@
     }
 
     function mostrar(tela) {
-        ["telaCiclos", "telaMembros", "telaPessoa"].forEach(id => $(id).classList.toggle("d-none", id !== tela));
+        ["telaCiclos", "telaMembros", "telaPlanos", "telaPessoa"].forEach(id => $(id).classList.toggle("d-none", id !== tela));
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -113,14 +113,17 @@
         $("filtroNome").value = "";
         $("filtroRegiao").value = "";
         $("filtroSituacao").value = "";
+        $("filtroResultado").value = "";
         await carregarMembros();
     }
 
     async function carregarMembros() {
         $("listaMembros").innerHTML = '<div class="col-12 text-muted">Carregando membros...</div>';
         try {
-            const data = await api("membros", { params: { ciclo: state.ciclo.id, nome: $("filtroNome").value, regiao: $("filtroRegiao").value, situacao: $("filtroSituacao").value } });
+            const data = await api("membros", { params: { ciclo: state.ciclo.id, nome: $("filtroNome").value, regiao: $("filtroRegiao").value, situacao: $("filtroSituacao").value, resultado: $("filtroResultado").value } });
             state.ciclo = data.ciclo;
+            state.membrosFiltrados = data.membros;
+            renderPlanos();
             $("cicloTitulo").textContent = data.ciclo.descricao;
             $("cicloResumo").textContent = `${data.ciclo.dataFormatada} · ${data.ciclo.grupo}`;
             $("totalMembros").textContent = `${data.membros.length} membro${data.membros.length === 1 ? "" : "s"} encontrado${data.membros.length === 1 ? "" : "s"}`;
@@ -130,12 +133,39 @@
                         <img src="fotos/foto_${m.id}.jpg" class="evaluation-member-photo" alt="" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')">
                         <span class="evaluation-avatar d-none">${esc(m.nome.charAt(0))}</span>
                         <div class="flex-grow-1"><h5 class="mb-1">${esc(m.nome)}</h5><div class="text-muted small">${esc(m.paroquia || "Paróquia não informada")} · ${esc(m.regiao || "Região não informada")}</div></div>
-                        <span class="badge ${m.avaliado ? "text-bg-success" : "text-bg-secondary"}">${m.avaliado ? "Avaliado" : "Pendente"}</span>
+                        <div class="d-flex flex-column align-items-end gap-1"><span class="badge ${m.avaliado ? "text-bg-success" : "text-bg-secondary"}">${m.avaliado ? "Avaliado" : "Pendente"}</span>${m.avaliado ? `<span class="badge ${m.resultado === "POSITIVA" ? "text-bg-success" : m.resultado === "NEGATIVA" ? "text-bg-danger" : "text-bg-warning"}">${esc(resultadoLabel(m.resultado))}</span>` : ""}</div>
                     </article>
                 </div>`).join("") : '<div class="col-12"><div class="evaluation-panel text-center text-muted">Nenhum membro encontrado.</div></div>';
         } catch (e) { $("listaMembros").innerHTML = ""; alertar(e.message); }
     }
 
+    function renderPlanos() {
+        const status = $("filtroStatusPlano").value;
+        const planos = state.membrosFiltrados.filter(m => m.acao && (!status || m.statusAcao === status));
+        $("listaPlanos").innerHTML = planos.length ? planos.map(m => `<tr><td>${esc(m.nome)}</td><td style="white-space:pre-line">${esc(m.acao)}</td><td><select class="form-select form-select-sm status-plano-acao" data-id-avaliacao="${m.idAvaliacao}" data-status-atual="${m.statusAcao || "PENDENTE"}" ${window.avaliacoesSomenteLeitura ? "disabled" : ""} aria-label="Status do plano de ação de ${esc(m.nome)}"><option value="PENDENTE" ${(m.statusAcao || "PENDENTE") === "PENDENTE" ? "selected" : ""}>Pendente</option><option value="CONCLUIDA" ${m.statusAcao === "CONCLUIDA" ? "selected" : ""}>Concluída</option></select></td></tr>`).join("") : '<tr><td colspan="3" class="text-center text-muted py-3">Nenhum plano de ação encontrado para os filtros selecionados.</td></tr>';
+    }
+
+    function imprimirRelatorioAvaliacoes(tipo) {
+        const base = state.membrosFiltrados;
+        let titulo, cabecalho, linhas;
+        if (tipo === "avaliacoes") {
+            const dados = base.filter(m => m.avaliado);
+            titulo = "Resultado das avaliações";
+            cabecalho = "<th>Nome</th><th>Avaliação</th><th>Resultado</th><th>Status</th><th>Data</th>";
+            linhas = dados.map(m => `<tr><td>${esc(m.nome)}</td><td style="white-space:pre-line">${esc(m.textoAvaliacao)}</td><td>${esc(resultadoLabel(m.resultado))}</td><td>Avaliado</td><td>${esc(m.dataAvaliacao)}</td></tr>`).join("");
+        } else {
+            const filtro = $("filtroStatusPlano").value;
+            const dados = base.filter(m => m.acao && (!filtro || m.statusAcao === filtro));
+            titulo = "Planos de ação";
+            cabecalho = "<th>Nome</th><th>A ação</th><th>Status</th>";
+            linhas = dados.map(m => `<tr><td>${esc(m.nome)}</td><td style="white-space:pre-line">${esc(m.acao)}</td><td>${m.statusAcao === "CONCLUIDA" ? "Concluída" : "Pendente"}</td></tr>`).join("");
+        }
+        const resumo = `${state.ciclo.descricao} · ${state.ciclo.dataFormatada} · ${state.ciclo.grupo}`;
+        $("areaImpressaoAvaliacoes").innerHTML = `<h1>${esc(titulo)}</h1><div class="meta">${esc(resumo)}<br>Filtros aplicados: nome “${esc($("filtroNome").value || "Todos") }” · região “${esc($("filtroRegiao").selectedOptions[0]?.textContent || "Todas") }” · situação “${esc($("filtroSituacao").selectedOptions[0]?.textContent || "Todas") }” · resultado “${esc($("filtroResultado").selectedOptions[0]?.textContent || "Todos") }”${tipo === "plano" ? ` · status do plano “${esc($("filtroStatusPlano").selectedOptions[0]?.textContent || "Todos") }”` : ""}<br>${tipo === "avaliacoes" ? base.filter(m => m.avaliado).length : base.filter(m => m.acao && (!$("filtroStatusPlano").value || m.statusAcao === $("filtroStatusPlano").value)).length} registro(s)</div><table><thead><tr>${cabecalho}</tr></thead><tbody>${linhas || `<tr><td colspan="${tipo === "avaliacoes" ? 5 : 3}">Nenhum registro encontrado.</td></tr>`}</tbody></table>`;
+        document.body.classList.add("print-report-mode");
+        window.print();
+    }
+    window.addEventListener("afterprint", () => document.body.classList.remove("print-report-mode"));
     async function abrirPessoa(id) {
         mostrar("telaPessoa");
         try {
@@ -271,6 +301,30 @@
     $("filtroNome").addEventListener("input", (() => { let timer; return () => { clearTimeout(timer); timer = setTimeout(carregarMembros, 300); }; })());
     $("filtroRegiao").addEventListener("change", carregarMembros);
     $("filtroSituacao").addEventListener("change", carregarMembros);
+    $("filtroResultado").addEventListener("change", carregarMembros);
+    $("filtroStatusPlano").addEventListener("change", renderPlanos);
+    $("listaPlanos").addEventListener("change", async event => {
+        const seletor = event.target.closest(".status-plano-acao");
+        if (!seletor) return;
+        const membro = state.membrosFiltrados.find(m => m.idAvaliacao === Number(seletor.dataset.idAvaliacao));
+        if (!membro) return;
+        const anterior = membro.statusAcao || "PENDENTE";
+        seletor.disabled = true;
+        try {
+            await api("atualizarStatusAcao", { body: { id: membro.idAvaliacao, status: seletor.value } });
+            membro.statusAcao = seletor.value;
+            renderPlanos();
+            alertar("Status do plano de ação atualizado.", "success");
+        } catch (error) {
+            seletor.value = anterior;
+            alertar(error.message);
+        } finally {
+            if (seletor.isConnected) seletor.disabled = Boolean(window.avaliacoesSomenteLeitura);
+        }
+    });
+    $("abrirPlanos").addEventListener("click", () => { $("resumoPlanos").textContent = `${state.ciclo.descricao} · ${state.ciclo.dataFormatada} · ${state.ciclo.grupo}`; mostrar("telaPlanos"); });
+    $("imprimirResultados").addEventListener("click", () => imprimirRelatorioAvaliacoes("avaliacoes"));
+    $("imprimirPlano").addEventListener("click", () => imprimirRelatorioAvaliacoes("plano"));
     $("filtroAnoCiclo").addEventListener("change", renderCiclos);
     $("filtroGrupoCiclo").addEventListener("change", renderCiclos);
     document.addEventListener("click", e => {

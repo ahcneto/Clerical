@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/avaliacoes.css?v=20260923-photo">
-</head>
+<style>.print-report{display:none}@media print{body.print-report-mode> *{display:none!important}body.print-report-mode #areaImpressaoAvaliacoes{display:block!important;padding:0 12mm}.print-report h1{font-size:20pt;margin-bottom:4px}.print-report .meta{margin-bottom:16px;color:#555}.print-report table{width:100%;border-collapse:collapse;font-size:9pt}.print-report th,.print-report td{border:1px solid #777;padding:6px;vertical-align:top}.print-report th{background:#eee!important;print-color-adjust:exact}.print-report tr{break-inside:avoid;page-break-inside:avoid}}</style></head>
 <body>
 <jsp:include page="includes/header.jsp"/>
 <main class="container py-4">
@@ -34,9 +34,16 @@
         <div class="evaluation-panel mb-4"><div class="row g-3">
             <div class="col-md-6"><label for="filtroNome" class="form-label">Nome</label><input id="filtroNome" class="form-control" placeholder="Buscar membro pelo nome"></div>
             <div class="col-md-3"><label for="filtroRegiao" class="form-label">Região episcopal</label><select id="filtroRegiao" class="form-select"><option value="">Todas as regiões</option></select></div>
-            <div class="col-md-3"><label for="filtroSituacao" class="form-label">Situação</label><select id="filtroSituacao" class="form-select"><option value="">Todos</option><option value="PENDENTE">Pendentes</option><option value="AVALIADO">Avaliados</option></select></div>
+            <div class="col-md-3"><label for="filtroSituacao" class="form-label">Situação</label><select id="filtroSituacao" class="form-select"><option value="">Todos</option><option value="PENDENTE">Pendentes</option><option value="AVALIADO">Avaliados</option></select></div><div class="col-md-3"><label for="filtroResultado" class="form-label">Resultado</label><select id="filtroResultado" class="form-select"><option value="">Todos os resultados</option><option value="POSITIVA">Positivo</option><option value="NEGATIVA">Negativo</option><option value="NEUTRA">Neutro</option></select></div>
         </div></div>
+        <div class="d-flex gap-2 flex-wrap mb-4 no-print"><button type="button" class="btn btn-outline-primary" id="imprimirResultados"><i class="bi bi-printer"></i> Imprimir resultados da avaliação</button><button type="button" class="btn btn-outline-success" id="abrirPlanos"><i class="bi bi-list-check"></i> Planos de ação</button></div>
+
         <div id="totalMembros" class="text-muted mb-3"></div><div id="listaMembros" class="row g-3"></div>
+    </section>
+    <section id="telaPlanos" class="d-none">
+        <button class="btn btn-link ps-0 text-decoration-none mb-3" data-voltar="membros"><i class="bi bi-arrow-left"></i> Voltar aos membros</button>
+        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4"><div><h1 class="fw-bold mb-1">Planos de ação</h1><p class="text-muted mb-0" id="resumoPlanos"></p></div><button type="button" class="btn btn-outline-success no-print" id="imprimirPlano"><i class="bi bi-printer"></i> Imprimir planos de ação</button></div>
+        <div class="evaluation-panel mb-4 no-print"><div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-3"><div><h4 class="mb-1">Ações registradas</h4><p class="text-muted mb-0">Filtre por status e atualize cada plano.</p></div><div><label for="filtroStatusPlano" class="form-label">Status</label><select id="filtroStatusPlano" class="form-select"><option value="">Todos</option><option value="PENDENTE">Pendente</option><option value="CONCLUIDA">Concluída</option></select></div></div><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Nome</th><th>A ação</th><th>Status</th></tr></thead><tbody id="listaPlanos"></tbody></table></div></div>
     </section>
     <section id="telaPessoa" class="d-none">
         <button class="btn btn-link ps-0 text-decoration-none mb-3" data-voltar="membros"><i class="bi bi-arrow-left"></i> Voltar aos membros</button>
@@ -76,6 +83,7 @@
         </div>
     </section>
 </main>
+<div id="areaImpressaoAvaliacoes" class="print-report" aria-hidden="true"></div>
 <div class="modal fade" id="modalCiclo" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><form id="formCiclo">
     <div class="modal-header"><h5 class="modal-title" id="modalCicloTitulo">Novo ciclo de avaliação</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button></div>
     <div class="modal-body"><input type="hidden" id="idCiclo">
@@ -107,5 +115,5 @@
 <jsp:include page="includes/footer.jsp"/>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>window.avaliacoesSomenteLeitura=<%= "EXT".equals((String)session.getAttribute("usuarioPerfil")) %>;</script>
-<script src="js/avaliacoes.js?v=20260923-photo"></script>
+<script src="js/avaliacoes.js?v=20261126-card-result"></script>
 </body></html>
